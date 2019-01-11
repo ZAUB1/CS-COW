@@ -1,6 +1,14 @@
 # CS COW (Capture the Sneaky Cow)
 
-## Tour par tour
+## Joueur
+```
+- Revelation du brouillard en bougeant
+- Tour par tour
+- Mouvements / Attaques
+	- 2 Moves
+	- 1 Move, 1 Attaque
+	- 2 Attaques
+```
 
 ## Carte
 ```
