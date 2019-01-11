@@ -7,6 +7,7 @@ CS COW (Capture the Sneaky Cow)
 	- Objectif
 		- Capturer la vache
 	- Pièges
+	- "Brouillard de guerre"
 
 => Multijoueur
 	- 2 Joueurs
