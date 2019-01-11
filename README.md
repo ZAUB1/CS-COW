@@ -1,4 +1,4 @@
-CS COW (Capture the Sneaky Cow)
+# CS COW (Capture the Sneaky Cow)
 
 ## Tour par tour
 
