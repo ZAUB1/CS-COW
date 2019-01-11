@@ -1,18 +1,18 @@
 CS COW (Capture the Sneaky Cow)
 
-=> Tour par tour
+## Tour par tour
 
-=> Carte
+## Carte
 ```
-	- Quadrillée
-	- Objectif
-		- Capturer la vache
-	- Pièges
-	- "Brouillard de guerre"
+- Quadrillée
+- Objectif
+	- Capturer la vache
+- Pièges
+- "Brouillard de guerre"
 ```
 
-=> Multijoueur
+## Multijoueur
 ```
-	- 2 Joueurs
-	- Réseau
+- 2 Joueurs
+- Réseau
 ```
