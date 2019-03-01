@@ -30,7 +30,6 @@ class Arc:
         self.nodeA  = nodeA
         self.nodeB  = nodeB
 
-
 # Node placement
 for i in range(15):
     for j in range(15):
@@ -55,6 +54,7 @@ for i in range(15):
                 if inArray(nl, nc):
                     a = Arc(labyrinth[i][j], labyrinth[nl][nc], i, j)
                     arcs.append(a)
+
 # Shuffle Arc list
 random.shuffle(arcs)
 
@@ -64,7 +64,6 @@ for i in range(15):
         print(labyrinth[i][j], end="")
     print('\n', end="")
 
+# Debug prints
 print(nodes)
 print(nodeID)
-
-print(len(arcs))
