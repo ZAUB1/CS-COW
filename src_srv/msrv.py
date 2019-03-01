@@ -28,9 +28,11 @@ class SrvEvents:
 
     def TriggerGlobalClientEvent(self, n, *args):
         for i in range(len(self.conns)):
-            self.conns[i].send(b"zboub");
+            #self.conns[i].send(b"zboub");
+            self.conns[i].send(bytes(n, 'utf-8'));
 
-    #def TriggerClientEvent(self, client, )
+    def TriggerClientEvent(self, client, n, *args):
+        client.send(bytes(n, 'utf-8'));
 
 Server = SrvEvents();
 
@@ -42,12 +44,13 @@ print(":: Socket port " + str(PORT));
 s.listen(0);
 print(":: Listening...");
 
-def client_thread(conn):
+def client_thread(conn, addr):
     conn.send(b"connected");
+
+    Server.TriggerClientEvent(conn, "testevent");
 
     while True:
         data = conn.recv(1024);
-        print(data);
 
         if not data:
             break;
@@ -55,13 +58,15 @@ def client_thread(conn):
     Server.conns.remove(conn);
     conn.close();
 
+    print("-> Disconnected from " + addr[0] + ":" + str(addr[1]));
+
 def srvloop():
     while True:
         conn, addr = s.accept();
         Server.conns.append(conn);
 
-        print("Connected to " + addr[0] + ":" + str(addr[1]));
+        print("-> Connected to " + addr[0] + ":" + str(addr[1]));
 
-        start_new_thread(client_thread, (conn,));
+        start_new_thread(client_thread, (conn, addr, ));
 
 srvloop();
