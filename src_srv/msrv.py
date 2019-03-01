@@ -1,22 +1,19 @@
-import threading
 import socket
 import sys
-import json
-import signal
-from threading import Thread
-#import deamon
-#from thread import start_new_thread
+from _thread import start_new_thread
 
 HOST = '';
-PORT = 110;
+PORT = 120;
 
 conn = None;
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
 
 class SrvEvents:
     def __init__(self):
         self.sevents = {};
-        self.teststr = "zaejzej";
-        self.conn = None;
+        self.conns = [];
 
     def RegisterServerEvent(self, n):
         self.sevents[n] = None;
@@ -30,28 +27,22 @@ class SrvEvents:
         self.sevents[n] = cb;
 
     def TriggerGlobalClientEvent(self, n, *args):
-        self.conn.sendall(b"testesteste");
-        #conn.sendall(json.dumps({n: n, arg: list(args)}))
+        for i in range(len(self.conns)):
+            self.conns[i].send(b"zboub");
+
+    #def TriggerClientEvent(self, client, )
 
 Server = SrvEvents();
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
-
-print("Socket Created");
+print(":: Socket Created");
 
 s.bind((HOST, PORT));
-print("Socket port " + str(PORT));
+print(":: Socket port " + str(PORT));
 
-s.listen(10);
-print("Listening...");
-
-Server.RegisterServerEvent("srv:onconn");
+s.listen(0);
+print(":: Listening...");
 
 def client_thread(conn):
-    Server.TriggerIntervalEvent("srv:onconn");
-
-    print("Yup", conn);
-
     conn.send(b"connected");
 
     while True:
@@ -61,27 +52,16 @@ def client_thread(conn):
         if not data:
             break;
 
-        conn.sendall(b"ok");
+    Server.conns.remove(conn);
     conn.close();
 
 def srvloop():
     while True:
         conn, addr = s.accept();
-        Server.conn = conn;
+        Server.conns.append(conn);
+
         print("Connected to " + addr[0] + ":" + str(addr[1]));
 
-        #start_new_thread(client_thread, (conn,));
-        thread = Thread(target = client_thread, args = (conn, ))
-        thread.start();
-        thread.join();
-
-
-def testfunc():
-    print("OUIIIi")
-    Server.TriggerGlobalClientEvent("blblbl");
-
-Server.AddEventHandler("srv:onconn", testfunc);
+        start_new_thread(client_thread, (conn,));
 
 srvloop();
-
-s.close();
