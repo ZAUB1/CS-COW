@@ -1,63 +1,94 @@
-import threading
 import socket
 import sys
-from thread import start_new_thread
+from _thread import start_new_thread
+import json
 
 HOST = '';
-PORT = 9999;
+PORT = 120;
 
 conn = None;
 
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
-except socket.error, msg:
-    print("Couldn't create socket. Error Code: ", str(msg[0]), "Error: ", msg[1]);
-    sys.exit(0);
-
-print("Socket Created");
-
-try:
-    s.bind((HOST, PORT));
-    print("Socket port " + str(PORT));
-except socket.error, msg:
-    print("Bind Failed. Error Code: {} Error: {}".format(str(msg[0]), msg[1]));
-    sys.exit();
-
-s.listen(10);
-print("Listening...");
-
-def client_thread(conn):
-    print("Yup", conn);
-
-    conn.send("WOW C'EST CONNECTE EN TABARNAKKKKK.\n");
-
-    while True:
-        data = conn.recv(1024);
-        print(data);
-
-        if not data:
-            break;
-
-        conn.sendall("ok");
-    conn.close();
-
-while True:
-    conn, addr = s.accept();
-    print("Connected to " + addr[0] + ":" + str(addr[1]));
-
-    start_new_thread(client_thread, (conn,));
-
-s.close();
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
 
 class SrvEvents:
     def __init__(self):
-        self.sevents = [];
+        self.sevents = {};
+        self.conns = [];
+        self.lastsource = None;
 
-    def strtonbr(self, str):
+    def RegisterServerEvent(self, n):
+        self.sevents[n] = None;
 
+    def TriggerIntervalEvent(self, n):
+        self.sevents[n]();
 
-    def RegisterServerEvent(self, n, cb):
-        return 1
+    def AddEventHandler(self, n, cb):
+        #if n in self.sevents == True:
+        self.sevents[n] = cb;
+        #else:
+        #    print("-> Event doesn't exist");
 
-    def TriggerClientEvent(self, n):
-        return 1
+    def TriggerGlobalClientEvent(self, n, *args):
+        arr = [];
+
+        for i in args:
+            arr.append(i);
+
+        for i in range(len(self.conns)):
+            self.conns[i].send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+
+    def TriggerClientEvent(self, client, n, *args):
+        arr = [];
+
+        for i in args:
+            arr.append(i);
+
+        client.send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+
+    def GetLastSource(self):
+        return self.lastsource;
+
+Server = SrvEvents();
+
+print(":: Socket Created");
+
+s.bind((HOST, PORT));
+print(":: Socket port " + str(PORT));
+
+s.listen(0);
+print(":: Listening...");
+
+def client_thread(conn, addr):
+    Server.TriggerClientEvent(conn, "connected");
+
+    while True:
+        data = conn.recv(1024);
+        data = data.decode("UTF-8");
+
+        if not data:
+            break;
+        else:
+            Server.lastsource = conn;
+            Server.TriggerIntervalEvent(data)
+
+    Server.conns.remove(conn);
+    conn.close();
+
+    print("-> Disconnected from " + addr[0] + ":" + str(addr[1]));
+
+def srvloop():
+    while True:
+        conn, addr = s.accept();
+        Server.conns.append(conn);
+
+        print("-> Connected to " + addr[0] + ":" + str(addr[1]));
+
+        start_new_thread(client_thread, (conn, addr, ));
+
+def OnClientConnected():
+    print(Server.GetLastSource());
+
+Server.AddEventHandler("onclientconnected", OnClientConnected);
+
+srvloop();
