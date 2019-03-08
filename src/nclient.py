@@ -50,4 +50,4 @@ Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
 if __name__ == "__main__":
-    Main()
+    Main();
