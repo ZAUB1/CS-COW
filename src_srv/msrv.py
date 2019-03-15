@@ -3,6 +3,9 @@ import sys
 from _thread import start_new_thread
 import json
 
+from map import *
+from player import *
+
 HOST = '';
 PORT = 120;
 
@@ -10,6 +13,9 @@ conn = None;
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
+
+map = genLaby();
+cow = Cow(map);
 
 class SrvEvents:
     def __init__(self):

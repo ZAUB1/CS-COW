@@ -20,8 +20,22 @@ class Player:
 
 class Cow:
     def __init__(self, map):
-        x = randint(1, 13);
-        y = randint(1, 13);
+        #self.cb = cb;
 
-        self.pos = Vector2(x, y);
+        self.x = None;
+        self.y = None;
+        self.pos = None;
+
+        self.CreatePos();
+
         self.found = False;
+
+    def CreatePos(self):
+        self.x = randint(1, 13);
+        self.y = randint(1, 13);
+
+        if map[x][y] == "#":
+            self.CreatePos();
+        else:
+            self.pos = Vector2(self.x, self.y);
+            #self.cb();
