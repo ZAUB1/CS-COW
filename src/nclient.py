@@ -2,9 +2,11 @@ import socket
 import json
 
 from cow import *
+from player import *
 
 map = None;
 cow = None;
+player = None;
 
 class ClientEvent:
     def __init__(self):
@@ -59,9 +61,11 @@ Client.AddEventHandler("connected", OnConnected);
 def initd(args):
     global map;
     global cow;
+    global player;
 
     map = args[0];
     cow = Cow(args[1][0], args[1][1]);
+    player = Player(Client);
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", initd);

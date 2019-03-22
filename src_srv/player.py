@@ -5,6 +5,7 @@ class Player:
     def __init__(self):
         self.life = 10;
         self.actions = 2;
+        self.pos = Vector2(1, 1)
 
     def SetLife(self, n):
         self.life = n;

@@ -10,6 +10,7 @@ HOST = "";
 PORT = 120;
 
 conn = None;
+players = {};
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
@@ -22,6 +23,7 @@ class SrvEvents:
         self.sevents = {};
         self.conns = [];
         self.lastsource = None;
+        self.lastid = None;
 
     def RegisterServerEvent(self, n):
         self.sevents[n] = None;
@@ -52,6 +54,9 @@ class SrvEvents:
     def GetLastSource(self):
         return self.lastsource;
 
+    def GetLastId(self):
+        return self.lastid;
+
 Server = SrvEvents();
 
 print(":: Socket Created");
@@ -74,6 +79,8 @@ def client_thread(conn, addr):
         else:
             data = json.loads(data);
             Server.lastsource = conn;
+            Server.lastid = conn.getpeername()[1];
+
             Server.TriggerIntervalEvent(data['n'], data['args']);
 
     Server.conns.remove(conn);
@@ -91,8 +98,22 @@ def srvloop():
         start_new_thread(client_thread, (conn, addr, ));
 
 def OnClientConnected(args):
+    players[Server.GetLastId()] = Player();
+
     Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords());
 
 Server.AddEventHandler("onclientconnected", OnClientConnected);
+
+#Player events
+
+def moveply(args):
+    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]);
+
+Server.AddEventHandler("player:move", moveply);
+
+def changelife(args):
+    players[Server.GetLastId()].SetLife(args[0]);
+
+Server.AddEventHandler("player:setlife", changelife);
 
 srvloop();
