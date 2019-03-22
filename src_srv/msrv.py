@@ -91,7 +91,7 @@ def srvloop():
         start_new_thread(client_thread, (conn, addr, ));
 
 def OnClientConnected(args):
-    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), [cow.x, cow.y]);
+    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords());
 
 Server.AddEventHandler("onclientconnected", OnClientConnected);
 
