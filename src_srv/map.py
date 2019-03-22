@@ -8,7 +8,7 @@ MOUV    = [[2, 0], [-2, 0], [0, 2], [0, -2]]
 MOUVARC = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
 # Convert 2D Array in a simple string and return it
-def toString(array):
+def MaptoString(array):
     str = ""
     for i in range(15):
         for j in range(15):

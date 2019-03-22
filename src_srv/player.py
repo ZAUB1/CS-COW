@@ -1,4 +1,4 @@
-import Vector2 from vector
+from vector import Vector2
 from random import randint
 
 class Player:
@@ -9,7 +9,7 @@ class Player:
     def SetLife(self, n):
         self.life = n;
 
-    def GetLife(self)
+    def GetLife(self):
         return self.life;
 
     def SetActions(self, n):
@@ -25,6 +25,7 @@ class Cow:
         self.x = None;
         self.y = None;
         self.pos = None;
+        self.map = map;
 
         self.CreatePos();
 
@@ -34,7 +35,7 @@ class Cow:
         self.x = randint(1, 13);
         self.y = randint(1, 13);
 
-        if map[x][y] == "#":
+        if self.map[self.x][self.y] == "#":
             self.CreatePos();
         else:
             self.pos = Vector2(self.x, self.y);

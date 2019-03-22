@@ -6,7 +6,7 @@ import json
 from map import *
 from player import *
 
-HOST = '';
+HOST = "";
 PORT = 120;
 
 conn = None;
@@ -26,14 +26,11 @@ class SrvEvents:
     def RegisterServerEvent(self, n):
         self.sevents[n] = None;
 
-    def TriggerIntervalEvent(self, n):
-        self.sevents[n]();
+    def TriggerIntervalEvent(self, n, args):
+        self.sevents[n](args);
 
     def AddEventHandler(self, n, cb):
-        #if n in self.sevents == True:
         self.sevents[n] = cb;
-        #else:
-        #    print("-> Event doesn't exist");
 
     def TriggerGlobalClientEvent(self, n, *args):
         arr = [];
@@ -75,8 +72,9 @@ def client_thread(conn, addr):
         if not data:
             break;
         else:
+            data = json.loads(data);
             Server.lastsource = conn;
-            Server.TriggerIntervalEvent(data)
+            Server.TriggerIntervalEvent(data['n'], data['args']);
 
     Server.conns.remove(conn);
     conn.close();
@@ -92,8 +90,8 @@ def srvloop():
 
         start_new_thread(client_thread, (conn, addr, ));
 
-def OnClientConnected():
-    print(Server.GetLastSource());
+def OnClientConnected(args):
+    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), [cow.x, cow.y]);
 
 Server.AddEventHandler("onclientconnected", OnClientConnected);
 
