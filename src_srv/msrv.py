@@ -22,6 +22,7 @@ class SrvEvents:
     def __init__(self):
         self.sevents = {};
         self.conns = [];
+        self.connsbyid = {};
         self.lastsource = None;
         self.lastid = None;
 
@@ -50,6 +51,19 @@ class SrvEvents:
             arr.append(i);
 
         client.send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+
+    def SendAllExcept(self, n, client, *args):
+        arr = [];
+
+        for i in args:
+            arr.append(i);
+
+        for i in range(len(self.conns)):
+            print("cl", self.conns[i].getpeername()[1] != client)
+
+            if (self.conns[i].getpeername()[1] != client) == True:
+                print("rerzer")
+                self.conns[i].send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
 
     def GetLastSource(self):
         return self.lastsource;
@@ -108,6 +122,7 @@ Server.AddEventHandler("onclientconnected", OnClientConnected);
 
 def moveply(args):
     players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]);
+    Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
 
 Server.AddEventHandler("player:move", moveply);
 

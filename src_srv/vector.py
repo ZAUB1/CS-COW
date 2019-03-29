@@ -14,6 +14,6 @@ class Vector2:
         nvec = Vector2(self.x - b.x, self.y - b.y);
         return math.sqrt(nvec.x * nvec.x + nvec.y * nvec.y);
 
-    def Set(x, y):
+    def Set(self, x, y):
         self.x = x;
         self.y = y;
