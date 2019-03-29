@@ -96,10 +96,11 @@ def initd(args):
 
 
     # On positionne tout les canvas sur la fenetre
-    for Y in range(15        print("zboub", n)):
-            for X in         print("zboub", n)range(15):
-                canva        print("zboub", n)s[Y][X]=Canvas(fen)
-                canva        print("zboub", n)s[Y][X].place(x=(40*X),y=(40*Y), width=40, height=40,anchor=NW)
+    for Y in range(15):
+            for X in range(15):
+                canvas[Y][X]=Canvas(fen)
+                canvas[Y][X].place(x=(40*X),y=(40*Y), width=40, height=40,anchor=NW)
+
 
     # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
     def Brouillard():
