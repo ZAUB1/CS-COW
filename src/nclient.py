@@ -216,7 +216,11 @@ Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
 
 def oplayerpos(args):
-    print(args)
+    global canvas;
+
+    opos = args[0];
+    print(opos)
+    #canvas[opos[0]][opos[1]].create_image(20,20,image=joueur)
 
 Client.RegisterClientEvent("oplayer:newpos");
 Client.AddEventHandler("oplayer:newpos", oplayerpos);
