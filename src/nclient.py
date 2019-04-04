@@ -5,6 +5,7 @@ from cow import *
 from player import *
 from tkinter import*
 from _thread import start_new_thread
+import sys
 
 fen = Tk();
 fen.title('CS COW');
@@ -21,6 +22,8 @@ joueur=PhotoImage(file='player.png')
 laby = None;
 cow = None;
 player = None;
+ply = None;
+canvas = None;
 
 class ClientEvent:
     def __init__(self):
@@ -46,6 +49,13 @@ class ClientEvent:
 
 Client = ClientEvent();
 
+def test():
+    while True:
+        line = sys.stdin.readline()
+        print(line);
+
+start_new_thread(test, ());
+
 def Main():
     address = "127.0.0.1";
 
@@ -65,6 +75,8 @@ def Main():
 
     s.close();
 
+start_new_thread(Main, ());
+
 def OnConnected(args):
     print("-> Connected to server");
     Client.TriggerServerEvent("onclientconnected");
@@ -72,54 +84,19 @@ def OnConnected(args):
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
-def initd(args):
+def data(args):
     global laby;
     global cow;
     global player;
-    global Client;
+    global ply;
 
     laby = args[0];
     cow = Cow(args[1][0], args[1][1]);
     player = Player(Client);
 
     # Assignation du tableau a "labyrinthe".
-    labyrinthe = stringToTbl()
+    labyrinthe = stringToTbl();
 
-    # Creation d'un tableau de canvas vides pour y assigner plus facilement les images a l'aide des coordonees de celles ci.
-    canvas = [[None for i in range(15)] for i in range(15)]
-
-    # Creation de la classe player.
-    class player:
-        pass
-
-    ply = player
-
-
-    # On positionne tout les canvas sur la fenetre
-    for Y in range(15):
-            for X in range(15):
-                canvas[Y][X]=Canvas(fen)
-                canvas[Y][X].place(x=(40*X),y=(40*Y), width=40, height=40,anchor=NW)
-
-
-    # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
-    def Brouillard():
-        for Y in range(15):
-            for X in range(15):
-                canvas[Y][X].create_image(20,20,image=noir)
-
-    # fonction pour initialiser la classe "player" creer "posX" et "posY" qui seront les coordonees de ce dernier.
-    # On place le joueur et on decouvre le labyrinthe grace a "joueurBrouillard".
-    def initialisation(x, y):
-        Brouillard()
-        #fullLaby();
-        setattr(ply, 'posX', x)
-        setattr(ply, 'posY', y)
-        joueurBrouillard(ply.posX, ply.posY)
-        canvas[ply.posY][ply.posX].create_image(20,20,image=joueur);
-        fen.focus_set();
-
-    # Une fonction pour affichr le labyrinthe complet avec le joueur.
     def fullLaby():
         for Y in range(15):
             for X in range(15):
@@ -205,7 +182,7 @@ def initd(args):
                 print("Mur en bas")
             else:
                 py = py+1
-                joueurBrouillard(px,py)
+                joueurBrouillard(px,py) 
 
         elif Key == "'6'":
             if labyrinthe[int(py)][int(px)+1] == '#':
@@ -233,20 +210,64 @@ def initd(args):
             print("Mauvaise touche : \n 8 : Aller en haut \n 5 : Aller en bas \n 4 : Aller a gauche \n 6 : Aller a droite \n - : Afficher tout le labyrinthe \n * : Noircir tout le labyrinth \n echap : Quitter ")
 
     fen.bind("<Key>", bouger);
-
-    def moveotherplayer(args):
-        print("anneyong")
-        print(args)
-
-    Client.RegisterClientEvent("oplayer:newpos");
-    Client.AddEventHandler("oplayer:newpos", moveotherplayer);
-
-    initialisation(1, 1);
-    fen.update();
-    #fen.mainloop();
+    joueurBrouillard(ply.posX, ply.posY)
 
 Client.RegisterClientEvent("firstdata");
-Client.AddEventHandler("firstdata", initd);
+Client.AddEventHandler("firstdata", data);
+
+def oplayerpos(args):
+    print(args)
+
+Client.RegisterClientEvent("oplayer:newpos");
+Client.AddEventHandler("oplayer:newpos", oplayerpos);
+
+def initd():
+    global laby;
+    global cow;
+    global player;
+    global Client;
+    global ply;
+    global canvas;
+
+    # Creation d'un tableau de canvas vides pour y assigner plus facilement les images a l'aide des coordonees de celles ci.
+    canvas = [[None for i in range(15)] for i in range(15)]
+
+    # Creation de la classe player.
+    class player:
+        pass
+
+    ply = player
+
+
+    # On positionne tout les canvas sur la fenetre
+    for Y in range(15):
+            for X in range(15):
+                canvas[Y][X]=Canvas(fen)
+                canvas[Y][X].place(x=(40*X),y=(40*Y), width=40, height=40,anchor=NW)
+
+
+    # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
+    def Brouillard():
+        for Y in range(15):
+            for X in range(15):
+                canvas[Y][X].create_image(20,20,image=noir)
+
+    # fonction pour initialiser la classe "player" creer "posX" et "posY" qui seront les coordonees de ce dernier.
+    # On place le joueur et on decouvre le labyrinthe grace a "joueurBrouillard".
+    def initialisation(x, y):
+        Brouillard()
+        #fullLaby();
+        setattr(ply, 'posX', x)
+        setattr(ply, 'posY', y)
+        canvas[ply.posY][ply.posX].create_image(20,20,image=joueur);
+        fen.focus_set();
+
+    # Une fonction pour affichr le labyrinthe complet avec le joueur.
+    """ """
+
+    initialisation(1, 1);
+    #fen.update();
+    fen.mainloop();
 
 def stringToTbl():
     tbl = [["a" for i in range(15)] for i in range(15)]
@@ -258,4 +279,4 @@ def stringToTbl():
     return tbl
 
 if __name__ == "__main__":
-    Main();
+    initd();

@@ -59,7 +59,7 @@ class SrvEvents:
             arr.append(i);
 
         for i in range(len(self.conns)):
-            print("cl", self.conns[i].getpeername()[1] != client)
+            print("cl", self.conns[i].getpeername()[1], client)
 
             if (self.conns[i].getpeername()[1] != client) == True:
                 print("rerzer")
