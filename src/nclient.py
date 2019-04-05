@@ -79,6 +79,13 @@ def OnConnected(args):
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
+def OPlayerRdy(args):
+    global player;
+    player.FreezePos(False);
+
+Client.RegisterClientEvent("oplayer:connected");
+Client.AddEventHandler("oplayer:connected", OPlayerRdy);
+
 # Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
 def joueurBrouillard(px, py, oplayer):
     global canvas;
@@ -178,9 +185,10 @@ def data(args):
             if labyrinthe[int(py)][int(px)-1] != '#':
                 px = px-1
 
-        player.move(px, py);
-        lastplayer = [px, py];
-        joueurBrouillard(px, py, False);
+        if (player.freeze == False):
+            player.move(px, py);
+            lastplayer = [px, py];
+            joueurBrouillard(px, py, False);
 
     fen.bind("<Key>", bouger);
     joueurBrouillard(player.pos.x, player.pos.y, False)
@@ -235,12 +243,12 @@ def initd():
     fen.mainloop();
 
 def stringToTbl():
-    tbl = [["a" for i in range(15)] for i in range(15)]
-    n=0
+    tbl = [["a" for i in range(15)] for i in range(15)];
+    n = 0;
     for y in range(15):
         for x in range(15):
-          tbl[y][x] = laby[n]
-          n+=1
+            tbl[y][x] = laby[n];
+            n += 1;
     return tbl
 
 if __name__ == "__main__":

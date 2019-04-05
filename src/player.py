@@ -6,7 +6,7 @@ class Player:
         self.life = 10;
 
         self.Client = None;
-        self.freeze = False;
+        self.freeze = True;
 
     def move(self, x, y):
         self.pos.x = x;

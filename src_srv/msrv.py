@@ -88,6 +88,11 @@ start_new_thread(test, ());
 def client_thread(conn, addr):
     Server.TriggerClientEvent(conn, "connected");
 
+    Server.SendAllExcept("oplayer:connected", conn.getpeername()[1]);
+
+    if len(Server.conns) > 1:
+        Server.TriggerClientEvent(conn, "oplayer:connected");
+
     while True:
         data = conn.recv(1024);
         data = data.decode("UTF-8");
