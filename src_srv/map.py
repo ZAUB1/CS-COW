@@ -100,4 +100,7 @@ def genLaby():
                 elif r == 5:
                     labyrinth[i][j] = 'T'
 
+    # No trap / heal on spawn
+    labyrinth[1][1] = '.'
+
     return labyrinth
