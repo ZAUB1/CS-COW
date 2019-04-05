@@ -18,6 +18,7 @@ soin=PhotoImage(file='soin.png');
 route=PhotoImage(file='route.png');
 noir=PhotoImage(file='warfog.png');
 joueur=PhotoImage(file='player.png');
+joueur2 = PhotoImage(file="player2.png")
 cowi = PhotoImage(file="cow.png");
 
 laby = None;
@@ -103,7 +104,10 @@ def joueurBrouillard(px, py, oplayer):
     elif labyrinthe[py][px] == 'H':
         canvas[py][px].create_image(20,20,image=soin)
 
-    canvas[py][px].create_image(20,20,image=joueur)
+    if oplayer == True:
+        canvas[py][px].create_image(20,20,image=joueur);
+    else:
+        canvas[py][px].create_image(20,20,image=joueur2);
 
     # Gestion de la vision du joueur autour de sa case.
     for i in range(4):
@@ -134,7 +138,7 @@ def joueurBrouillard(px, py, oplayer):
             canvas[cow.pos.y][cow.pos.x].create_image(20,20,image=cowi);
 
     if oplayer == True:
-        canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur);
+        canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur2);
     else:
         canvas[lastoplayer[1]][lastoplayer[0]].create_image(20,20,image=joueur);
 
