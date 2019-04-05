@@ -100,4 +100,4 @@ def genLaby():
                 elif r == 5:
                     labyrinth[i][j] = 'T'
 
-        return labyrinth
+    return labyrinth

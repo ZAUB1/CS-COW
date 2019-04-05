@@ -59,10 +59,7 @@ class SrvEvents:
             arr.append(i);
 
         for i in range(len(self.conns)):
-            print("cl", self.conns[i].getpeername()[1], client)
-
             if (self.conns[i].getpeername()[1] != client) == True:
-                print("rerzer")
                 self.conns[i].send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
 
     def GetLastSource(self):
@@ -80,6 +77,13 @@ print(":: Socket port " + str(PORT));
 
 s.listen(0);
 print(":: Listening...");
+
+def test():
+    while True:
+        line = sys.stdin.readline()
+        print(line);
+
+start_new_thread(test, ());
 
 def client_thread(conn, addr):
     Server.TriggerClientEvent(conn, "connected");

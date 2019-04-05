@@ -3,7 +3,7 @@ import json
 
 from cow import *
 from player import *
-from tkinter import*
+from tkinter import *
 from _thread import start_new_thread
 import sys
 
@@ -12,17 +12,20 @@ fen.title('CS COW');
 fen.geometry("600x600");
 fen.resizable(width = False, height = False);
 
-mur=PhotoImage(file='mur.png')
-piege=PhotoImage(file='piege.png')
-soin=PhotoImage(file='soin.png')
-route=PhotoImage(file='route.png')
-noir=PhotoImage(file='warfog.png')
-joueur=PhotoImage(file='player.png')
+mur=PhotoImage(file='mur.png');
+piege=PhotoImage(file='piege.png');
+soin=PhotoImage(file='soin.png');
+route=PhotoImage(file='route.png');
+noir=PhotoImage(file='warfog.png');
+joueur=PhotoImage(file='player.png');
 
 laby = None;
 cow = None;
 player = None;
 canvas = None;
+
+lastplayer = [1, 1];
+lastoplayer = [1, 1];
 
 class ClientEvent:
     def __init__(self):
@@ -47,13 +50,6 @@ class ClientEvent:
         self.connection.send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
 
 Client = ClientEvent();
-
-def test():
-    while True:
-        line = sys.stdin.readline()
-        print(line);
-
-start_new_thread(test, ());
 
 def Main():
     address = "127.0.0.1";
@@ -83,10 +79,58 @@ def OnConnected(args):
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
+# Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
+def joueurBrouillard(px, py, oplayer):
+    global canvas;
+    global lastplayer;
+    global lastoplayer;
+
+    labyrinthe = stringToTbl();
+
+    # Affichage du sol sous le joueur et le joueur lui meme.
+    if labyrinthe[py][px] == 'T':
+        canvas[py][px].create_image(20,20,image=piege)
+    elif labyrinthe[py][px] == '.':
+        canvas[py][px].create_image(20,20,image=route)
+    elif labyrinthe[py][px] == 'H':
+        canvas[py][px].create_image(20,20,image=soin)
+
+    canvas[py][px].create_image(20,20,image=joueur)
+
+    # Gestion de la vision du joueur autour de sa case.
+    for i in range(4):
+        if i == 0:
+            cx = px-1
+            cy = py
+        elif i == 1:
+            cx = px+1
+            cy = py
+        elif i == 2:
+            cx = px
+            cy = py-1
+        elif i == 3:
+            cx = px
+            cy = py+1
+
+        if labyrinthe[cy][cx] == '#':
+            canvas[cy][cx].create_image(20,20,image=mur)
+        elif labyrinthe[cy][cx] == 'T':
+            canvas[cy][cx].create_image(20,20,image=piege)
+        elif labyrinthe[cy][cx] == '.':
+            canvas[cy][cx].create_image(20,20,image=route)
+        elif labyrinthe[cy][cx] == 'H':
+            canvas[cy][cx].create_image(20,20,image=soin)
+
+    if oplayer == True:
+        canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur);
+    else:
+        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20,20,image=joueur);
+
 def data(args):
     global laby;
     global cow;
     global player;
+    global lastplayer;
 
     laby = args[0];
     cow = Cow(args[1][0], args[1][1]);
@@ -112,113 +156,45 @@ def data(args):
 
         #canvas[player.pos.y][player.pos.x].create_image(20,20,image=joueur)
 
-    # Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
-    def joueurBrouillard(px, py):
-        print("position de la fonction",px ,py)
-
-        # Affichage du sol sous le joueur et le joueur lui meme.
-        if labyrinthe[py][px] == 'T':
-            canvas[py][px].create_image(20,20,image=piege)
-        elif labyrinthe[py][px] == '.':
-            canvas[py][px].create_image(20,20,image=route)
-        elif labyrinthe[py][px] == 'H':
-            canvas[py][px].create_image(20,20,image=soin)
-
-        canvas[py][px].create_image(20,20,image=joueur)
-
-        # Gestion et affichage des coordonees du joueur dans la fenetre de commande.
-        print("position joueur", player.pos.x, player.pos.y)
-        player.pos.x = px
-        player.pos.y = py
-        print("position joueur apres modification", player.pos.x, player.pos.y)
-
-        Client.TriggerServerEvent("player:move", [player.pos.x, player.pos.y]);
-
-        # Gestion de la vision du joueur autour de sa case.
-        for i in range(4):
-            if i == 0:
-                cx = px-1
-                cy = py
-            elif i == 1:
-                cx = px+1
-                cy = py
-            elif i == 2:
-                cx = px
-                cy = py-1
-            elif i == 3:
-                cx = px
-                cy = py+1
-
-            if labyrinthe[cy][cx] == '#':
-                canvas[cy][cx].create_image(20,20,image=mur)
-            elif labyrinthe[cy][cx] == 'T':
-                canvas[cy][cx].create_image(20,20,image=piege)
-            elif labyrinthe[cy][cx] == '.':
-                canvas[cy][cx].create_image(20,20,image=route)
-            elif labyrinthe[cy][cx] == 'H':
-                canvas[cy][cx].create_image(20,20,image=soin)
-
     # Fonction qui gere le deplacement du joueur a partir des touches pressees et qui s'assure que le joueur ne peux pas avancer dans un mur.
     # Elle envoie ensuite les futures coordonees du joueur a "joueurBrouilard" pous qu'il soit affiche.
     def bouger(event):
+        global lastplayer;
+
         py = player.pos.y
         px = player.pos.x
         Key = repr(event.char)
 
-        print("")
-        print ('touche pressee :', Key)
-
-        if Key == "'8'":
-                if labyrinthe[int(py)-1][int(px)] == '#':
-                    print("Mur en haut")
-                else:
-                    py = py-1
-                    joueurBrouillard(px,py)
-
-        elif Key == "'5'":
-            if labyrinthe[int(py)+1][int(px)] == '#':
-                print("Mur en bas")
-            else:
+        if Key == "'z'":
+            if labyrinthe[int(py)-1][int(px)] != '#':
+                py = py-1
+        elif Key == "'s'":
+            if labyrinthe[int(py)+1][int(px)] != '#':
                 py = py+1
-                joueurBrouillard(px,py) 
-
-        elif Key == "'6'":
-            if labyrinthe[int(py)][int(px)+1] == '#':
-                print("Mur a droite")
-            else:
+        elif Key == "'d'":
+            if labyrinthe[int(py)][int(px)+1] != '#':
                 px = px+1
-                joueurBrouillard(px,py)
-
-        elif Key == "'4'":
-            if labyrinthe[int(py)][int(px)-1] == '#':
-                print("Mur a gauche")
-            else:
+        elif Key == "'q'":
+            if labyrinthe[int(py)][int(px)-1] != '#':
                 px = px-1
-                joueurBrouillard(px,py)
-        elif Key == "'-'":
-            fullLaby()
-        
-        elif Key == "'\\x1b'":
-            fen.destroy()
 
-        elif Key =="'*'":
-            initialisation(player.pos.x, player.pos.y)
-
-        else :
-            print("Mauvaise touche : \n 8 : Aller en haut \n 5 : Aller en bas \n 4 : Aller a gauche \n 6 : Aller a droite \n - : Afficher tout le labyrinthe \n * : Noircir tout le labyrinth \n echap : Quitter ")
+        player.move(px, py);
+        lastplayer = [px, py];
+        joueurBrouillard(px, py, False);
 
     fen.bind("<Key>", bouger);
-    joueurBrouillard(player.pos.x, player.pos.y)
+    joueurBrouillard(player.pos.x, player.pos.y, False)
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
 
 def oplayerpos(args):
     global canvas;
+    global lastoplayer;
 
     opos = args[0];
-    print(opos)
-    canvas[opos[1]][opos[0]].create_image(20,20,image=joueur)
+    lastoplayer = [opos[0], opos[1]];
+    joueurBrouillard(opos[0], opos[1], True);
 
 Client.RegisterClientEvent("oplayer:newpos");
 Client.AddEventHandler("oplayer:newpos", oplayerpos);

@@ -6,12 +6,13 @@ class Player:
         self.life = 10;
 
         self.Client = None;
+        self.freeze = False;
 
     def move(self, x, y):
         self.pos.x = x;
         self.pos.y = y;
 
-        self.Client.TriggerServerEvent("player:move", self.coords);
+        self.Client.TriggerServerEvent("player:move", self.pos.coords());
 
     def setlife(self, life):
         self.life = life;
@@ -20,3 +21,6 @@ class Player:
 
     def SetClient(self, cl):
         self.Client = cl
+
+    def FreezePos(self, st):
+        self.freeze = st;
