@@ -38,6 +38,8 @@ class Cow:
 
         if self.map[self.x][self.y] == "#":
             self.CreatePos();
+        elif self.map[self.x][self.y] == "T":
+            self.CreatePos();
         else:
             self.pos = Vector2(self.x, self.y);
             #self.cb();
