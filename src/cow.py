@@ -1,4 +1,5 @@
+from vector import Vector2
+
 class Cow:
     def __init__(self, x, y):
-        self.x = x;
-        self.y = y;
+        self.pos = Vector2(x, y);

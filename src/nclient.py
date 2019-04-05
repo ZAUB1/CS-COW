@@ -128,6 +128,9 @@ def joueurBrouillard(px, py, oplayer):
         elif labyrinthe[cy][cx] == 'H':
             canvas[cy][cx].create_image(20,20,image=soin)
 
+        if (cow.pos.x == cx) and (cow.pos.y == cy):
+            print("Won");
+
     if oplayer == True:
         canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur);
     else:
