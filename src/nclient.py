@@ -18,6 +18,7 @@ soin=PhotoImage(file='soin.png');
 route=PhotoImage(file='route.png');
 noir=PhotoImage(file='warfog.png');
 joueur=PhotoImage(file='player.png');
+cowi = PhotoImage(file="cow.png");
 
 laby = None;
 cow = None;
@@ -130,6 +131,7 @@ def joueurBrouillard(px, py, oplayer):
 
         if (cow.pos.x == cx) and (cow.pos.y == cy):
             print("Won");
+            canvas[cow.pos.y][cow.pos.x].create_image(20,20,image=cowi);
 
     if oplayer == True:
         canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur);
