@@ -21,6 +21,8 @@ joueur=PhotoImage(file='player.png');
 joueur2 = PhotoImage(file="player2.png")
 cowi = PhotoImage(file="cow.png");
 
+fen.iconbitmap("favicon.ico");
+
 laby = None;
 cow = None;
 player = None;
@@ -98,11 +100,11 @@ def joueurBrouillard(px, py, oplayer):
 
     # Affichage du sol sous le joueur et le joueur lui meme.
     if labyrinthe[py][px] == 'T':
-        canvas[py][px].create_image(20,20,image=piege)
+        canvas[py][px].create_image(20,20,image=piege);
     elif labyrinthe[py][px] == '.':
-        canvas[py][px].create_image(20,20,image=route)
+        canvas[py][px].create_image(20,20,image=route);
     elif labyrinthe[py][px] == 'H':
-        canvas[py][px].create_image(20,20,image=soin)
+        canvas[py][px].create_image(20,20,image=soin);
 
     if oplayer == True:
         canvas[py][px].create_image(20,20,image=joueur);
@@ -112,8 +114,8 @@ def joueurBrouillard(px, py, oplayer):
     # Gestion de la vision du joueur autour de sa case.
     for i in range(4):
         if i == 0:
-            cx = px-1
-            cy = py
+            cx = px-1;
+            cy = py;
         elif i == 1:
             cx = px+1
             cy = py
