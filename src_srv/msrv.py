@@ -2,6 +2,7 @@ import socket
 import sys
 from _thread import start_new_thread
 import json
+import os
 
 from map import *
 from player import *
@@ -78,12 +79,17 @@ print(":: Socket port " + str(PORT));
 s.listen(0);
 print(":: Listening...");
 
-def test():
+def prompt():
     while True:
         line = sys.stdin.readline()
-        print(line);
 
-start_new_thread(test, ());
+        if "clist" in line:
+            for i in range(len(Server.conns)):
+                print(i + 1, "- id:", str(Server.conns[i].getpeername()[1]) + ",", "ip:", Server.conns[i].getpeername()[0]);
+        elif "exit" in line:
+            os._exit(1)
+
+start_new_thread(prompt, ());
 
 def client_thread(conn, addr):
     Server.TriggerClientEvent(conn, "connected");

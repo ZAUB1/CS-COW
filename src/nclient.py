@@ -1,5 +1,6 @@
 import socket
 import json
+import os
 
 from cow import *
 from player import *
@@ -67,6 +68,7 @@ def Main():
         data = data.decode("UTF-8");
 
         if not data:
+            os._exit(1);
             break;
         else:
             data = json.loads(data);
