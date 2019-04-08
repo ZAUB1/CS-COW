@@ -22,7 +22,7 @@ joueur=PhotoImage(file='player.png');
 joueur2 = PhotoImage(file="player2.png")
 cowi = PhotoImage(file="cow.png");
 
-fen.iconbitmap("favicon.ico");
+#fen.iconbitmap("favicon.ico");
 
 laby = None;
 cow = None;
