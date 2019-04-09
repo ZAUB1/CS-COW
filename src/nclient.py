@@ -78,19 +78,17 @@ def Main():
 
 start_new_thread(Main, ());
 
+def actionsgest():
+    while True:
+        if player.actions == 0:
+            player.finishround();
+
 def OnConnected(args):
     print("-> Connected to server");
     Client.TriggerServerEvent("onclientconnected");
 
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
-
-def OPlayerRdy(args):
-    global player;
-    player.FreezePos(False);
-
-Client.RegisterClientEvent("oplayer:connected");
-Client.AddEventHandler("oplayer:connected", OPlayerRdy);
 
 # Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
 def joueurBrouillard(px, py, oplayer):
@@ -204,7 +202,8 @@ def data(args):
             joueurBrouillard(px, py, False);
 
     fen.bind("<Key>", bouger);
-    joueurBrouillard(player.pos.x, player.pos.y, False)
+    joueurBrouillard(player.pos.x, player.pos.y, False);
+    start_new_thread(actionsgest, ());
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
@@ -266,3 +265,6 @@ def stringToTbl():
 
 if __name__ == "__main__":
     initd();
+
+    #Client.RegisterClientEvent("player:freeze");
+    #Client.AddEventHandler("player:freeze", player.FreezePos(True));

@@ -6,6 +6,7 @@ import os
 
 from map import *
 from player import *
+from game import *
 
 HOST = "";
 PORT = 120;
@@ -71,6 +72,8 @@ class SrvEvents:
 
 Server = SrvEvents();
 
+game = Game(Server);
+
 print(":: Socket Created");
 
 s.bind((HOST, PORT));
@@ -94,10 +97,8 @@ start_new_thread(prompt, ());
 def client_thread(conn, addr):
     Server.TriggerClientEvent(conn, "connected");
 
-    Server.SendAllExcept("oplayer:connected", conn.getpeername()[1]);
-
     if len(Server.conns) > 1:
-        Server.TriggerClientEvent(conn, "oplayer:connected");
+        game.start();
 
     while True:
         data = conn.recv(1024);
