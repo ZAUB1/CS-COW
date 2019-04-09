@@ -17,7 +17,7 @@ class Game:
         if self.playerturn == 0:
             self.playerturn = 1;
         else:
-            self.playersturn = 0;
+            self.playerturn = 0;
 
         self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
 
