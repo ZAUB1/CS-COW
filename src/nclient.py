@@ -13,13 +13,13 @@ fen.title('CS COW');
 fen.geometry("600x600");
 fen.resizable(width = False, height = False);
 
-mur=PhotoImage(file='mur.png');
-piege=PhotoImage(file='piege.png');
-soin=PhotoImage(file='soin.png');
-route=PhotoImage(file='route.png');
-noir=PhotoImage(file='warfog.png');
-joueur=PhotoImage(file='player.png');
-joueur2 = PhotoImage(file="player2.png")
+mur = PhotoImage(file='mur.png');
+piege = PhotoImage(file='piege.png');
+soin = PhotoImage(file='soin.png');
+route = PhotoImage(file='route.png');
+noir = PhotoImage(file='warfog.png');
+joueur = PhotoImage(file='player.png');
+joueur2 = PhotoImage(file="player2.png");
 cowi = PhotoImage(file="cow.png");
 
 #fen.iconbitmap("favicon.ico");
@@ -114,35 +114,35 @@ def joueurBrouillard(px, py, oplayer):
     # Gestion de la vision du joueur autour de sa case.
     for i in range(4):
         if i == 0:
-            cx = px-1;
+            cx = px - 1;
             cy = py;
         elif i == 1:
-            cx = px+1
-            cy = py
+            cx = px + 1;
+            cy = py;
         elif i == 2:
-            cx = px
-            cy = py-1
+            cx = px;
+            cy = py - 1;
         elif i == 3:
-            cx = px
-            cy = py+1
+            cx = px;
+            cy = py + 1;
 
         if labyrinthe[cy][cx] == '#':
-            canvas[cy][cx].create_image(20,20,image=mur)
+            canvas[cy][cx].create_image(20, 20, image=mur);
         elif labyrinthe[cy][cx] == 'T':
-            canvas[cy][cx].create_image(20,20,image=piege)
+            canvas[cy][cx].create_image(20, 20, image=piege);
         elif labyrinthe[cy][cx] == '.':
-            canvas[cy][cx].create_image(20,20,image=route)
+            canvas[cy][cx].create_image(20, 20, image=route);
         elif labyrinthe[cy][cx] == 'H':
-            canvas[cy][cx].create_image(20,20,image=soin)
+            canvas[cy][cx].create_image(20, 20, image=soin);
 
         if (cow.pos.x == cx) and (cow.pos.y == cy):
             print("Won");
-            canvas[cow.pos.y][cow.pos.x].create_image(20,20,image=cowi);
+            canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image=cowi);
 
     if oplayer == True:
-        canvas[lastplayer[1]][lastplayer[0]].create_image(20,20,image=joueur2);
+        canvas[lastplayer[1]][lastplayer[0]].create_image(20, 20, image=joueur2);
     else:
-        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20,20,image=joueur);
+        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20, 20, image=joueur);
 
 def data(args):
     global laby;
@@ -167,16 +167,16 @@ def data(args):
         for Y in range(15):
             for X in range(15):
                 if labyrinthe[Y][X] == '#':
-                    canvas[Y][X].create_image(20,20,image=mur)
+                    canvas[Y][X].create_image(20, 20, image=mur);
 
                 elif labyrinthe[Y][X] == ".":
-                    canvas[Y][X].create_image(20,20,image=route)
+                    canvas[Y][X].create_image(20, 20, image=route);
 
                 elif labyrinthe[Y][X] == "T":
-                    canvas[Y][X].create_image(20,20,image=piege)
+                    canvas[Y][X].create_image(20, 20, image=piege);
 
                 elif labyrinthe[Y][X] == "H":
-                    canvas[Y][X].create_image(20,20,image=soin)
+                    canvas[Y][X].create_image(20, 20, image=soin);
 
         #canvas[player.pos.y][player.pos.x].create_image(20,20,image=joueur)
 
@@ -185,22 +185,22 @@ def data(args):
     def bouger(event):
         global lastplayer;
 
-        py = player.pos.y
-        px = player.pos.x
-        Key = repr(event.char)
+        py = player.pos.y;
+        px = player.pos.x;
+        Key = repr(event.char);
 
         if Key == "'z'":
             if labyrinthe[int(py)-1][int(px)] != '#':
-                py = py-1
+                py = py - 1;
         elif Key == "'s'":
             if labyrinthe[int(py)+1][int(px)] != '#':
-                py = py+1
+                py = py + 1;
         elif Key == "'d'":
             if labyrinthe[int(py)][int(px)+1] != '#':
-                px = px+1
+                px = px + 1;
         elif Key == "'q'":
             if labyrinthe[int(py)][int(px)-1] != '#':
-                px = px-1
+                px = px - 1;
 
         if (player.freeze == False):
             player.move(px, py);
@@ -247,21 +247,21 @@ def initd():
     # On positionne tout les canvas sur la fenetre
     for Y in range(15):
         for X in range(15):
-            canvas[Y][X]=Canvas(fen)
-            canvas[Y][X].place(x=(40*X),y=(40*Y), width=40, height=40,anchor=NW)
+            canvas[Y][X] = Canvas(fen);
+            canvas[Y][X].place(x = (40*X), y = (40*Y), width = 40, height = 40,anchor = NW);
 
     # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
     def Brouillard():
         for Y in range(15):
             for X in range(15):
-                canvas[Y][X].create_image(20,20,image=noir)
+                canvas[Y][X].create_image(20, 20, image = noir);
 
     # fonction pour initialiser la classe "player" creer "posX" et "posY" qui seront les coordonees de ce dernier.
     # On place le joueur et on decouvre le labyrinthe grace a "joueurBrouillard".
     def initialisation():
-        Brouillard()
+        Brouillard();
 
-        canvas[player.pos.y][player.pos.x].create_image(20,20,image=joueur);
+        canvas[player.pos.y][player.pos.x].create_image(20, 20, image = joueur);
         fen.focus_set();
 
     initialisation();
