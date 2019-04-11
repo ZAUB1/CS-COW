@@ -8,6 +8,8 @@ from tkinter import *
 from _thread import start_new_thread
 import sys
 
+from sound import playsound, ThreadedSound
+
 fen = Tk();
 fen.title('CS COW');
 fen.geometry("600x600");
@@ -206,6 +208,7 @@ def data(args):
             player.move(px, py);
             lastplayer = [px, py];
             joueurBrouillard(px, py, False);
+            ThreadedSound("./walk.mp3");
 
             if labyrinthe[int(px)][int(py)] == 'T': #Handle trap catch
                 print("Player on trap");

@@ -51,3 +51,8 @@ if system == 'Windows':
     playsound = SoundWin;
 else:
     playsound = SoundLinux;
+
+from _thread import start_new_thread;
+
+def ThreadedSound(sound):
+    start_new_thread(playsound, (sound, ));
