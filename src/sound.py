@@ -51,5 +51,3 @@ if system == 'Windows':
     playsound = SoundWin;
 else:
     playsound = SoundLinux;
-
-playsound("./test.mp3");
