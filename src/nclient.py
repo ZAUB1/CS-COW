@@ -202,10 +202,15 @@ def data(args):
             if labyrinthe[int(py)][int(px)-1] != '#':
                 px = px - 1;
 
-        if (player.freeze == False):
+        if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)):
             player.move(px, py);
             lastplayer = [px, py];
             joueurBrouillard(px, py, False);
+
+            if labyrinthe[int(px)][int(py)] == 'T': #Handle trap catch
+                print("Player on trap");
+                player.FreezePos(True);
+                player.setlife(player.life - 2);
 
     fen.bind("<Key>", bouger);
     joueurBrouillard(player.pos.x, player.pos.y, False);
