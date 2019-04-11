@@ -13,14 +13,14 @@ fen.title('CS COW');
 fen.geometry("600x600");
 fen.resizable(width = False, height = False);
 
-mur = PhotoImage(file='mur.png');
-piege = PhotoImage(file='piege.png');
-soin = PhotoImage(file='soin.png');
-route = PhotoImage(file='route.png');
-noir = PhotoImage(file='warfog.png');
-joueur = PhotoImage(file='player.png');
-joueur2 = PhotoImage(file="player2.png");
-cowi = PhotoImage(file="cow.png");
+mur = PhotoImage(file = 'mur.png');
+piege = PhotoImage(file = 'piege.png');
+soin = PhotoImage(file = 'soin.png');
+route = PhotoImage(file = 'route.png');
+noir = PhotoImage(file = 'warfog.png');
+joueur = PhotoImage(file = 'player.png');
+joueur2 = PhotoImage(file = "player2.png");
+cowi = PhotoImage(file = "cow.png");
 
 #fen.iconbitmap("favicon.ico");
 
@@ -100,16 +100,16 @@ def joueurBrouillard(px, py, oplayer):
 
     # Affichage du sol sous le joueur et le joueur lui meme.
     if labyrinthe[py][px] == 'T':
-        canvas[py][px].create_image(20,20,image=piege);
+        canvas[py][px].create_image(20, 20, image = piege);
     elif labyrinthe[py][px] == '.':
-        canvas[py][px].create_image(20,20,image=route);
+        canvas[py][px].create_image(20, 20, image = route);
     elif labyrinthe[py][px] == 'H':
-        canvas[py][px].create_image(20,20,image=soin);
+        canvas[py][px].create_image(20, 20, image = soin);
 
     if oplayer == True:
-        canvas[py][px].create_image(20,20,image=joueur);
+        canvas[py][px].create_image(20, 20, image = joueur);
     else:
-        canvas[py][px].create_image(20,20,image=joueur2);
+        canvas[py][px].create_image(20, 20, image = joueur2);
 
     # Gestion de la vision du joueur autour de sa case.
     for i in range(4):
@@ -155,7 +155,7 @@ def data(args):
     player.SetClient(Client, args[2]);
 
     stats = StringVar();
-    statslab = Label(fen, textvariable=stats);
+    statslab = Label(fen, textvariable = stats);
     statslab.place(x = 5, y = 5);
 
     player.SetTxt(stats);
@@ -190,16 +190,16 @@ def data(args):
         Key = repr(event.char);
 
         if Key == "'z'":
-            if labyrinthe[int(py)-1][int(px)] != '#':
+            if labyrinthe[int(py) - 1][int(px)] != '#':
                 py = py - 1;
         elif Key == "'s'":
-            if labyrinthe[int(py)+1][int(px)] != '#':
+            if labyrinthe[int(py) + 1][int(px)] != '#':
                 py = py + 1;
         elif Key == "'d'":
-            if labyrinthe[int(py)][int(px)+1] != '#':
+            if labyrinthe[int(py)][int(px) + 1] != '#':
                 px = px + 1;
         elif Key == "'q'":
-            if labyrinthe[int(py)][int(px)-1] != '#':
+            if labyrinthe[int(py)][int(px) - 1] != '#':
                 px = px - 1;
 
         if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)):
