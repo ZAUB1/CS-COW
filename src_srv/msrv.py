@@ -98,6 +98,7 @@ def client_thread(conn, addr):
     Server.TriggerClientEvent(conn, "connected");
 
     if len(Server.conns) > 1:
+        Server.SendAllExcept("oplayer:connected", conn.getpeername()[1]);
         game.start();
 
     while True:
@@ -130,7 +131,7 @@ def srvloop():
 def OnClientConnected(args):
     players[Server.GetLastId()] = Player();
 
-    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords());
+    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords(), len(Server.conns));
 
 Server.AddEventHandler("onclientconnected", OnClientConnected);
 
@@ -141,10 +142,5 @@ def moveply(args):
     Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
 
 Server.AddEventHandler("player:move", moveply);
-
-def changelife(args):
-    players[Server.GetLastId()].SetLife(args[0]);
-
-Server.AddEventHandler("player:setlife", changelife);
 
 srvloop();

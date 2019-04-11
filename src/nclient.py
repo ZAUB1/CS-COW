@@ -152,8 +152,14 @@ def data(args):
 
     laby = args[0];
     cow = Cow(args[1][0], args[1][1]);
-    player.SetClient(Client);
+    player.SetClient(Client, args[2]);
 
+    stats = StringVar();
+    statslab = Label(fen, textvariable=stats);
+    statslab.place(x = 5, y = 5);
+
+    player.SetTxt(stats);
+    stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]));
     # Assignation du tableau a "labyrinthe".
     labyrinthe = stringToTbl();
 
@@ -207,6 +213,13 @@ def data(args):
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
+
+def ConnectedUpdate(args):
+    global player;
+    player.AddConnected();
+
+Client.RegisterClientEvent("oplayer:connected");
+Client.AddEventHandler("oplayer:connected", ConnectedUpdate);
 
 def oplayerpos(args):
     global canvas;

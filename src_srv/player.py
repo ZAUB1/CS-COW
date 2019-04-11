@@ -3,21 +3,7 @@ from random import randint
 
 class Player:
     def __init__(self):
-        self.life = 10;
-        self.actions = 2;
         self.pos = Vector2(1, 1)
-
-    def SetLife(self, n):
-        self.life = n;
-
-    def GetLife(self):
-        return self.life;
-
-    def SetActions(self, n):
-        self.actions = n;
-
-    def GetActions(self):
-        return self.actions;
 
 class Cow:
     def __init__(self, map):

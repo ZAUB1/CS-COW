@@ -8,6 +8,8 @@ class Player:
 
         self.Client = None;
         self.freeze = True;
+        self.stats = None;
+        self.connectedplayers = None;
 
     def move(self, x, y):
         self.pos.x = x;
@@ -19,14 +21,21 @@ class Player:
 
     def setlife(self, life):
         self.life = life;
+        self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers));
 
-        self.Client.TriggerServerEvent("player:setlife", self.life);
-
-    def SetClient(self, cl):
+    def SetClient(self, cl, connecteds):
         self.Client = cl;
+        self.connectedplayers = connecteds;
 
         self.Client.RegisterClientEvent("game:turn");
         self.Client.AddEventHandler("game:turn", self.startround);
+
+    def AddConnected(self):
+        self.connectedplayers += 1;
+        self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers));
+
+    def SetTxt(self, str):
+        self.stats = str;
 
     def FreezePos(self, st):
         self.freeze = st;
