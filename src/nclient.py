@@ -205,15 +205,21 @@ def data(args):
                 px = px - 1;
 
         if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)):
+            if labyrinthe[int(py)][int(px)] == "T": #Handle trap catch
+                print("Player on trap");
+                player.FreezePos(True);
+                player.setlife(player.life - 2);
+                player.finishround();
+            elif labyrinthe[int(py)][int(px)] == "H": #Handle heal
+                print("Player on heal");
+                player.setlife(player.life + 2);
+                labyrinthe[int(py)][int(px)] = ".";
+                canvas[int(px)][int(py)].create_image(20, 20, image=route);
+
             player.move(px, py);
             lastplayer = [px, py];
             joueurBrouillard(px, py, False);
             ThreadedSound("./walk.mp3");
-
-            if labyrinthe[int(px)][int(py)] == 'T': #Handle trap catch
-                print("Player on trap");
-                player.FreezePos(True);
-                player.setlife(player.life - 2);
 
     fen.bind("<Key>", bouger);
     joueurBrouillard(player.pos.x, player.pos.y, False);
