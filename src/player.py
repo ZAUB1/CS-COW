@@ -33,9 +33,6 @@ class Player:
         self.Client.RegisterClientEvent("game:turn");
         self.Client.AddEventHandler("game:turn", self.startround);
 
-        self.Client.RegisterClientEvent("game:started");
-        self.Client.AddEventHandler("game:started", self.updateinfo);
-
         self.Client.RegisterClientEvent("game:winpop");
         self.Client.AddEventHandler("game:winpop", self.winpop);
 
@@ -53,7 +50,6 @@ class Player:
         self.freeze = False;
         self.rostr = "C'est votre tour de jouer";
         self.updateinfo();
-        #self.actions = 2;
 
     def finishround(self):
         self.Client.TriggerServerEvent("player:endround");
