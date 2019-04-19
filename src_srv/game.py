@@ -1,8 +1,14 @@
+import asyncio
+
 class Game:
     def __init__(self, server):
         self.Server = server;
 
         self.playerturn = 0;
+
+    async def turn(self):
+        await asyncio.sleep(0.05);
+        self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
 
     def start(self):
         self.Server.RegisterServerEvent("player:endround");
@@ -11,7 +17,9 @@ class Game:
         self.Server.RegisterServerEvent("player:foundcow");
         self.Server.AddEventHandler("player:foundcow", self.end);
 
-        self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
+        #self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
+        #self.Server.SendAllExcept("game:started", self.Server.conns[self.playerturn]);
+        asyncio.run(self.turn());
 
     def Next(self, shit):
         if self.playerturn == 0:
@@ -19,7 +27,8 @@ class Game:
         else:
             self.playerturn = 0;
 
-        self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
+        #self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
+        asyncio.run(self.turn());
 
     def end(self):
         print("C'est fini");

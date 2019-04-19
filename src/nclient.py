@@ -58,6 +58,10 @@ class ClientEvent:
 
 Client = ClientEvent();
 
+def parsejson(data):
+    data = json.loads(data);
+    Client.TriggerInternalEvent(data['n'], data['args']);
+
 def Main():
     address = "127.0.0.1";
 
@@ -73,8 +77,7 @@ def Main():
             os._exit(1);
             break;
         else:
-            data = json.loads(data);
-            Client.TriggerInternalEvent(data['n'], data['args']);
+            start_new_thread(parsejson, (data, ));
 
     s.close();
 
@@ -97,6 +100,7 @@ def joueurBrouillard(px, py, oplayer):
     global canvas;
     global lastplayer;
     global lastoplayer;
+    global player;
 
     labyrinthe = stringToTbl();
 
@@ -138,7 +142,7 @@ def joueurBrouillard(px, py, oplayer):
             canvas[cy][cx].create_image(20, 20, image=soin);
 
         if (cow.pos.x == cx) and (cow.pos.y == cy):
-            print("Won");
+            player.win();
             canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image=cowi);
 
     if oplayer == True:
@@ -161,7 +165,7 @@ def data(args):
     statslab.place(x = 5, y = 5);
 
     player.SetTxt(stats);
-    stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]));
+    stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]) + " | En attente de joueur");
     # Assignation du tableau a "labyrinthe".
     labyrinthe = stringToTbl();
 

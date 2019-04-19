@@ -1,4 +1,5 @@
 from vector import Vector2
+from tkinter import *
 
 class Player:
     def __init__(self):
@@ -11,6 +12,8 @@ class Player:
         self.stats = None;
         self.connectedplayers = None;
 
+        self.rostr = "C'est au tour de l'autre joueur";
+
     def move(self, x, y):
         self.pos.x = x;
         self.pos.y = y;
@@ -21,7 +24,7 @@ class Player:
 
     def setlife(self, life):
         self.life = life;
-        self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers));
+        self.updateinfo();
 
     def SetClient(self, cl, connecteds):
         self.Client = cl;
@@ -30,9 +33,15 @@ class Player:
         self.Client.RegisterClientEvent("game:turn");
         self.Client.AddEventHandler("game:turn", self.startround);
 
+        self.Client.RegisterClientEvent("game:started");
+        self.Client.AddEventHandler("game:started", self.updateinfo);
+
+        self.Client.RegisterClientEvent("game:winpop");
+        self.Client.AddEventHandler("game:winpop", self.winpop);
+
     def AddConnected(self):
         self.connectedplayers += 1;
-        self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers));
+        self.updateinfo();
 
     def SetTxt(self, str):
         self.stats = str;
@@ -42,9 +51,29 @@ class Player:
 
     def startround(self, shit):
         self.freeze = False;
+        self.rostr = "C'est votre tour de jouer";
+        self.updateinfo();
         #self.actions = 2;
 
     def finishround(self):
         self.Client.TriggerServerEvent("player:endround");
         self.freeze = True;
         self.actions = 2;
+        self.rostr = "C'est au tour de l'autre joueur";
+        self.updateinfo();
+
+    def updateinfo(self):
+        self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers) + " | " + str(self.rostr));
+
+    def winpop(self):
+        popup = Tk();
+        popup.wm_title("Gagné");
+        label = Label(popup, text="Partie gagnée", font=NORM_FONT);
+        label.pack(side="top", pady=10);
+        B1 = Button(popup, text="Okay", command = popup.destroy);
+        B1.pack();
+        popup.mainloop();
+
+    def win(self):
+        self.winpop();
+        self.Client.TriggerServerEvent("game:win");

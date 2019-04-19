@@ -3,6 +3,7 @@ import sys
 from _thread import start_new_thread
 import json
 import os
+import asyncio
 
 from map import *
 from player import *
@@ -137,10 +138,21 @@ Server.AddEventHandler("onclientconnected", OnClientConnected);
 
 #Player events
 
-def moveply(args):
-    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]);
+async def sendnewpos():
+    await asyncio.sleep(0.05);
     Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
 
+def moveply(args):
+    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]);
+    #Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
+    asyncio.run(sendnewpos());
+
 Server.AddEventHandler("player:move", moveply);
+
+def wingame(args):
+    self.SendAllExcept("game:winpop", Server.GetLastId());
+
+Server.RegisterServerEvent("game:win");
+Server.AddEventHandler("game:win", wingame);
 
 srvloop();
