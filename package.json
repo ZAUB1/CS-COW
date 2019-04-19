@@ -1,0 +1,20 @@
+{
+  "name": "cs_cow",
+  "version": "1.0.0",
+  "description": "## Joueur ``` - Revelation du brouillard en bougeant - Tour par tour - Mouvements / Attaques \t- 2 Moves \t- 1 Move, 1 Attaque \t- 2 Attaques ```",
+  "main": "index.js",
+  "scripts": {
+    "server": "python ./src_srv/msrv.py",
+    "client": "cd ./src/ && python nclient.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/ZAUB1/isn.git"
+  },
+  "author": "La plèbe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/ZAUB1/isn/issues"
+  },
+  "homepage": "https://gitlab.com/ZAUB1/isn#readme"
+}
