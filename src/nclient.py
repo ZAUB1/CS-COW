@@ -30,6 +30,7 @@ laby = None;
 cow = None;
 player = None;
 canvas = None;
+labyrinthe = None;
 
 lastplayer = [1, 1];
 lastoplayer = [1, 1];
@@ -101,6 +102,7 @@ def joueurBrouillard(px, py, oplayer):
     global lastplayer;
     global lastoplayer;
     global player;
+    global labyrinthe;
 
     labyrinthe = stringToTbl();
 
@@ -157,6 +159,9 @@ def data(args):
     global lastplayer;
 
     laby = args[0];
+    # Assignation du tableau a "labyrinthe".
+    labyrinthe = stringToTbl();
+
     cow = Cow(args[1][0], args[1][1]);
     player.SetClient(Client, args[2]);
 
@@ -166,25 +171,6 @@ def data(args):
 
     player.SetTxt(stats);
     stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]) + " | En attente de joueur");
-    # Assignation du tableau a "labyrinthe".
-    labyrinthe = stringToTbl();
-
-    def fullLaby():
-        for Y in range(15):
-            for X in range(15):
-                if labyrinthe[Y][X] == '#':
-                    canvas[Y][X].create_image(20, 20, image = mur);
-
-                elif labyrinthe[Y][X] == ".":
-                    canvas[Y][X].create_image(20, 20, image = route);
-
-                elif labyrinthe[Y][X] == "T":
-                    canvas[Y][X].create_image(20, 20, image = piege);
-
-                elif labyrinthe[Y][X] == "H":
-                    canvas[Y][X].create_image(20, 20, image = soin);
-
-        #canvas[player.pos.y][player.pos.x].create_image(20,20,image=joueur)
 
     # Fonction qui gere le deplacement du joueur a partir des touches pressees et qui s'assure que le joueur ne peux pas avancer dans un mur.
     # Elle envoie ensuite les futures coordonees du joueur a "joueurBrouilard" pous qu'il soit affiche.
@@ -251,6 +237,33 @@ def oplayerpos(args):
 
 Client.RegisterClientEvent("oplayer:newpos");
 Client.AddEventHandler("oplayer:newpos", oplayerpos);
+
+def revealmap(args):
+    global labyrinthe;
+    global canvas;
+    global cow;
+
+    for Y in range(15):
+        for X in range(15):
+            if labyrinthe[Y][X] == '#':
+                canvas[Y][X].create_image(20, 20, image = mur);
+
+            elif labyrinthe[Y][X] == ".":
+                canvas[Y][X].create_image(20, 20, image = route);
+
+            elif labyrinthe[Y][X] == "T":
+                canvas[Y][X].create_image(20, 20, image = piege);
+
+            elif labyrinthe[Y][X] == "H":
+                canvas[Y][X].create_image(20, 20, image = soin);
+
+    canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image = cowi);
+
+def revmapthr(args):
+    start_new_thread(revealmap, (args, ));
+
+Client.RegisterClientEvent("players:reveal");
+Client.AddEventHandler("players:reveal", revmapthr);
 
 def initd():
     global laby;

@@ -150,7 +150,8 @@ def moveply(args):
 Server.AddEventHandler("player:move", moveply);
 
 def wingame(args):
-    self.SendAllExcept("game:winpop", Server.GetLastId());
+    Server.TriggerGlobalClientEvent("players:reveal");
+    Server.SendAllExcept("game:winpop", Server.GetLastId());
 
 Server.RegisterServerEvent("game:win");
 Server.AddEventHandler("game:win", wingame);
