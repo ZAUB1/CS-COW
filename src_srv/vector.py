@@ -10,10 +10,6 @@ class Vector2:
     def coords(self):
         return [self.x, self.y];
 
-    def DistanceWithVector(self, b):
-        nvec = Vector2(self.x - b.x, self.y - b.y);
-        return math.sqrt(nvec.x * nvec.x + nvec.y * nvec.y);
-
     def Set(self, x, y):
         self.x = x;
         self.y = y;

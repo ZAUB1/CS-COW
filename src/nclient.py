@@ -133,22 +133,22 @@ def joueurBrouillard(px, py, oplayer):
             cy = py + 1;
 
         if labyrinthe[cy][cx] == '#':
-            canvas[cy][cx].create_image(20, 20, image=mur);
+            canvas[cy][cx].create_image(20, 20, image = mur);
         elif labyrinthe[cy][cx] == 'T':
-            canvas[cy][cx].create_image(20, 20, image=piege);
+            canvas[cy][cx].create_image(20, 20, image = piege);
         elif labyrinthe[cy][cx] == '.':
-            canvas[cy][cx].create_image(20, 20, image=route);
+            canvas[cy][cx].create_image(20, 20, image = route);
         elif labyrinthe[cy][cx] == 'H':
-            canvas[cy][cx].create_image(20, 20, image=soin);
+            canvas[cy][cx].create_image(20, 20, image = soin);
 
         if (cow.pos.x == cx) and (cow.pos.y == cy):
             player.win();
-            canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image=cowi);
+            canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image = cowi);
 
     if oplayer == True:
-        canvas[lastplayer[1]][lastplayer[0]].create_image(20, 20, image=joueur2);
+        canvas[lastplayer[1]][lastplayer[0]].create_image(20, 20, image = joueur2);
     else:
-        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20, 20, image=joueur);
+        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20, 20, image = joueur);
 
 def data(args):
     global laby;
@@ -173,16 +173,16 @@ def data(args):
         for Y in range(15):
             for X in range(15):
                 if labyrinthe[Y][X] == '#':
-                    canvas[Y][X].create_image(20, 20, image=mur);
+                    canvas[Y][X].create_image(20, 20, image = mur);
 
                 elif labyrinthe[Y][X] == ".":
-                    canvas[Y][X].create_image(20, 20, image=route);
+                    canvas[Y][X].create_image(20, 20, image = route);
 
                 elif labyrinthe[Y][X] == "T":
-                    canvas[Y][X].create_image(20, 20, image=piege);
+                    canvas[Y][X].create_image(20, 20, image = piege);
 
                 elif labyrinthe[Y][X] == "H":
-                    canvas[Y][X].create_image(20, 20, image=soin);
+                    canvas[Y][X].create_image(20, 20, image = soin);
 
         #canvas[player.pos.y][player.pos.x].create_image(20,20,image=joueur)
 
@@ -213,12 +213,14 @@ def data(args):
                 print("Player on trap");
                 player.FreezePos(True);
                 player.setlife(player.life - 2);
+                player.updateinfo();
                 player.finishround();
             elif labyrinthe[int(py)][int(px)] == "H": #Handle heal
                 print("Player on heal");
                 player.setlife(player.life + 2);
+                player.updateinfo();
                 labyrinthe[int(py)][int(px)] = ".";
-                canvas[int(px)][int(py)].create_image(20, 20, image=route);
+                canvas[int(px)][int(py)].create_image(20, 20, image = route);
 
             player.move(px, py);
             lastplayer = [px, py];
@@ -266,7 +268,7 @@ def initd():
     for Y in range(15):
         for X in range(15):
             canvas[Y][X] = Canvas(fen);
-            canvas[Y][X].place(x = (40*X), y = (40*Y), width = 40, height = 40,anchor = NW);
+            canvas[Y][X].place(x = (40 * X), y = (40 * Y), width = 40, height = 40, anchor = NW);
 
     # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
     def Brouillard():
@@ -296,6 +298,3 @@ def stringToTbl():
 
 if __name__ == "__main__":
     initd();
-
-    #Client.RegisterClientEvent("player:freeze");
-    #Client.AddEventHandler("player:freeze", player.FreezePos(True));

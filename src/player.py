@@ -68,9 +68,9 @@ class Player:
     def winpop(self):
         popup = Tk();
         popup.wm_title("Gagné");
-        label = Label(popup, text="Partie gagnée", font=NORM_FONT);
-        label.pack(side="top", pady=10);
-        B1 = Button(popup, text="Okay", command = popup.destroy);
+        label = Label(popup, text = "Partie gagnée", font = NORM_FONT);
+        label.pack(side = "top", pady = 10);
+        B1 = Button(popup, text="Ok", command = popup.destroy);
         B1.pack();
         popup.mainloop();
 

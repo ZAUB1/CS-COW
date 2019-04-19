@@ -7,8 +7,6 @@ class Player:
 
 class Cow:
     def __init__(self, map):
-        #self.cb = cb;
-
         self.x = None;
         self.y = None;
         self.pos = None;
@@ -28,4 +26,3 @@ class Cow:
             self.CreatePos();
         else:
             self.pos = Vector2(self.x, self.y);
-            #self.cb();

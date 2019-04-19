@@ -29,6 +29,3 @@ class Game:
 
         #self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
         asyncio.run(self.turn());
-
-    def end(self):
-        print("C'est fini");
