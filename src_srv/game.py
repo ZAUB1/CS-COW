@@ -14,9 +14,6 @@ class Game:
         self.Server.RegisterServerEvent("player:endround");
         self.Server.AddEventHandler("player:endround", self.Next);
 
-        self.Server.RegisterServerEvent("player:foundcow");
-        self.Server.AddEventHandler("player:foundcow", self.end);
-
         #self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
         #self.Server.SendAllExcept("game:started", self.Server.conns[self.playerturn]);
         asyncio.run(self.turn());
