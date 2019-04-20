@@ -1,8 +1,9 @@
 from vector import Vector2
 from tkinter import *
+from helptext import *
 
 class Player:
-    def __init__(self):
+    def __init__(self, win):
         self.pos = Vector2(1, 1);
         self.life = 10;
         self.actions = 2;
@@ -11,8 +12,12 @@ class Player:
         self.freeze = True;
         self.stats = None;
         self.connectedplayers = None;
+        self.laby = None;
+
+        self.nexttotrap = False;
 
         self.rostr = "C'est au tour de l'autre joueur";
+        self.traptext = HelpText(win, "Appuyez sur E pour attaquer le piege", True, True);
 
     def move(self, x, y):
         self.pos.x = x;
@@ -22,13 +27,46 @@ class Player:
 
         self.Client.TriggerServerEvent("player:move", self.pos.coords());
 
+    def lookfortraps(self):
+        foundt = False;
+
+        px = self.pos.x;
+        py = self.pos.y;
+
+        for i in range(4):
+            if i == 0:
+                cx = px - 1;
+                cy = py;
+            elif i == 1:
+                cx = px + 1;
+                cy = py;
+            elif i == 2:
+                cx = px;
+                cy = py - 1;
+            elif i == 3:
+                cx = px;
+                cy = py + 1;
+
+            if self.laby[cy][cx] == 'T':
+                foundt = True;
+                break;
+
+        if foundt == True:
+            self.nexttotrap = True;
+            self.traptext.show();
+        else:
+            self.nexttotrap = False;
+            self.traptext.hide();
+
     def setlife(self, life):
         self.life = life;
         self.updateinfo();
 
-    def SetClient(self, cl, connecteds):
+    def SetClient(self, cl, connecteds, laby):
         self.Client = cl;
         self.connectedplayers = connecteds;
+
+        self.laby = laby;
 
         self.Client.RegisterClientEvent("game:turn");
         self.Client.AddEventHandler("game:turn", self.startround);
@@ -50,6 +88,7 @@ class Player:
         self.freeze = False;
         self.rostr = "C'est votre tour de jouer";
         self.updateinfo();
+        self.lookfortraps();
 
     def finishround(self):
         self.Client.TriggerServerEvent("player:endround");

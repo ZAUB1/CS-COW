@@ -163,7 +163,7 @@ def data(args):
     labyrinthe = stringToTbl();
 
     cow = Cow(args[1][0], args[1][1]);
-    player.SetClient(Client, args[2]);
+    player.SetClient(Client, args[2], labyrinthe);
 
     stats = StringVar();
     statslab = Label(fen, textvariable = stats);
@@ -275,7 +275,7 @@ def initd():
     # Creation d'un tableau de canvas vides pour y assigner plus facilement les images a l'aide des coordonees de celles ci.
     canvas = [[None for i in range(15)] for i in range(15)]
 
-    player = Player();
+    player = Player(fen);
 
     # On positionne tout les canvas sur la fenetre
     for Y in range(15):
