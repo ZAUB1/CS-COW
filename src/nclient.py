@@ -31,6 +31,7 @@ cow = None;
 player = None;
 canvas = None;
 labyrinthe = None;
+timevar = None;
 
 lastplayer = [1, 1];
 lastoplayer = [1, 1];
@@ -96,6 +97,17 @@ def OnConnected(args):
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
+def gametime(args):
+    global timevar;
+
+    if args[0] > 1:
+        timevar.set("Temps restant : " + str(args[0]) + " secondes");
+    else:
+        timevar.set("Temps restant : 1 seconde");
+
+Client.RegisterClientEvent("game:time");
+Client.AddEventHandler("game:time", gametime);
+
 # Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
 def joueurBrouillard(px, py, oplayer):
     global canvas;
@@ -157,6 +169,7 @@ def data(args):
     global cow;
     global player;
     global lastplayer;
+    global timevar;
 
     laby = args[0];
     # Assignation du tableau a "labyrinthe".
@@ -171,6 +184,12 @@ def data(args):
 
     player.SetTxt(stats);
     stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]) + " | En attente de joueur");
+
+    timevar = StringVar();
+    timelab = Label(fen, textvariable = timevar);
+    timelab.place(x = 5, y = 570);
+
+    timevar.set("Temps restant : 300 secondes");
 
     # Fonction qui gere le deplacement du joueur a partir des touches pressees et qui s'assure que le joueur ne peux pas avancer dans un mur.
     # Elle envoie ensuite les futures coordonees du joueur a "joueurBrouilard" pous qu'il soit affiche.
