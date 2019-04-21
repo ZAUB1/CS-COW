@@ -38,6 +38,8 @@ class Game:
 
         start_new_thread(self.setInterval, (self.countdown, 1, ));
 
+        self.Server.TriggerGlobalClientEvent("game:started");
+
     def Next(self, shit):
         if self.playerturn == 0:
             self.playerturn = 1;

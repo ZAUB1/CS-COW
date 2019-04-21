@@ -6,6 +6,8 @@ from cow import *
 from player import *
 from tkinter import *
 from _thread import start_new_thread
+from random import randint
+import threading
 import sys
 
 from sound import playsound, ThreadedSound
@@ -35,6 +37,11 @@ timevar = None;
 
 lastplayer = [1, 1];
 lastoplayer = [1, 1];
+
+def setInterval(func, time):
+    e = threading.Event();
+    while not e.wait(time):
+        func();
 
 class ClientEvent:
     def __init__(self):
@@ -96,6 +103,18 @@ def OnConnected(args):
 
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
+
+def cownoise():
+    ri = randint(0, 3);
+
+    if ri == 3:
+        ThreadedSound("./cow.mp3");
+
+def gamestarted(args):
+    setInterval(cownoise, 10);
+
+Client.RegisterClientEvent("game:started");
+Client.AddEventHandler("game:started", gamestarted);
 
 def gametime(args):
     global timevar;
