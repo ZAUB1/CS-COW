@@ -74,6 +74,9 @@ class Player:
         self.Client.RegisterClientEvent("game:winpop");
         self.Client.AddEventHandler("game:winpop", self.winpop);
 
+        self.Client.RegisterClientEvent("game:lost");
+        self.Client.AddEventHandler("game:lost", self.losepop);
+
     def AddConnected(self):
         self.connectedplayers += 1;
         self.updateinfo();
@@ -100,14 +103,21 @@ class Player:
     def updateinfo(self):
         self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers) + " | " + str(self.rostr));
 
-    def winpop(self):
+    def pop(self, stri, strt):
         popup = Tk();
-        popup.wm_title("Gagné");
-        label = Label(popup, text = "Partie gagnée");
+        popup.wm_title(strt);
+        label = Label(popup, text = stri);
         label.pack(side = "top", pady = 10);
         B1 = Button(popup, text="Ok", command = popup.destroy);
         B1.pack();
         popup.mainloop();
+
+    def winpop(self, *args):
+        self.pop("Partie gagnée", "Gagné");
+
+    def losepop(self, *args):
+        self.FreezePos(True);
+        self.pop("Partie perdu (temps écoulé)", "Perdu");
 
     def win(self):
         self.winpop();

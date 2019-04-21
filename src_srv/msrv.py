@@ -129,12 +129,16 @@ def srvloop():
 
         start_new_thread(client_thread, (conn, addr, ));
 
-def OnClientConnected(args):
+async def OnClientConnected(args):
     players[Server.GetLastId()] = Player();
 
+    await asyncio.sleep(0.5);
     Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords(), len(Server.conns));
 
-Server.AddEventHandler("onclientconnected", OnClientConnected);
+def handleconnection(args):
+    asyncio.run(OnClientConnected(args));
+
+Server.AddEventHandler("onclientconnected", handleconnection);
 
 #Player events
 
