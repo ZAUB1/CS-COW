@@ -1,6 +1,7 @@
 from vector import Vector2
 from tkinter import *
 from helptext import *
+from sound import ThreadedSound
 
 class Player:
     def __init__(self, win):
@@ -113,10 +114,12 @@ class Player:
         popup.mainloop();
 
     def winpop(self, *args):
+        ThreadedSound("./sounds/victory.mp3");
         self.pop("Partie gagnée", "Gagné");
 
     def losepop(self, *args):
         self.FreezePos(True);
+        ThreadedSound("./sounds/defeat.mp3");
         self.pop("Partie perdu (temps écoulé)", "Perdu");
 
     def win(self):

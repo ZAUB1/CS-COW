@@ -17,7 +17,7 @@ class HelpText:
         self.sound = sound;
 
         if (sound == True) and (hidden == False):
-            ThreadedSound("./notification.mp3");
+            ThreadedSound("./sounds/notification.mp3");
 
         self.hidden = hidden;
 
@@ -26,7 +26,7 @@ class HelpText:
             self.helptext.place(self.placement);
 
             if self.sound == True:
-                ThreadedSound("./notification.mp3");
+                ThreadedSound("./sounds/notification.mp3");
 
     def hide(self):
         if self.hidden == False:

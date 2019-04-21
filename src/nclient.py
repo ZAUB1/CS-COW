@@ -17,14 +17,14 @@ fen.title('CS COW');
 fen.geometry("600x600");
 fen.resizable(width = False, height = False);
 
-mur = PhotoImage(file = 'mur.png');
-piege = PhotoImage(file = 'piege.png');
-soin = PhotoImage(file = 'soin.png');
-route = PhotoImage(file = 'route.png');
-noir = PhotoImage(file = 'warfog.png');
-joueur = PhotoImage(file = 'player.png');
-joueur2 = PhotoImage(file = "player2.png");
-cowi = PhotoImage(file = "cow.png");
+mur = PhotoImage(file = 'images/mur.png');
+piege = PhotoImage(file = 'images/piege.png');
+soin = PhotoImage(file = 'images/soin.png');
+route = PhotoImage(file = 'images/route.png');
+noir = PhotoImage(file = 'images/warfog.png');
+joueur = PhotoImage(file = 'images/player.png');
+joueur2 = PhotoImage(file = "images/player2.png");
+cowi = PhotoImage(file = "images/cow.png");
 
 #fen.iconbitmap("favicon.ico");
 
@@ -108,7 +108,7 @@ def cownoise():
     ri = randint(0, 3);
 
     if ri == 3:
-        ThreadedSound("./cow.mp3");
+        ThreadedSound("./sounds/cow.mp3");
 
 def gamestarted(args):
     setInterval(cownoise, 10);
@@ -249,7 +249,7 @@ def data(args):
             player.move(px, py);
             lastplayer = [px, py];
             joueurBrouillard(px, py, False);
-            ThreadedSound("./walk.mp3");
+            ThreadedSound("./sounds/walk.mp3");
 
     fen.bind("<Key>", bouger);
     joueurBrouillard(player.pos.x, player.pos.y, False);
