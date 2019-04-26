@@ -35,29 +35,29 @@ canvas = None;
 labyrinthe = None;
 timevar = None;
 
-lastplayer = [1, 1];
+lastplayer = [1, 1]; #Positions initiales des joueurs
 lastoplayer = [1, 1];
 
-def setInterval(func, time):
+def setInterval(func, time): #Fonction permettant d'executer toutes les n secondes une autre fonction
     e = threading.Event();
     while not e.wait(time):
         func();
 
-class ClientEvent:
+class ClientEvent: #Classe principale du client
     def __init__(self):
         self.events = {};
         self.connection = None;
 
-    def RegisterClientEvent(self, n):
+    def RegisterClientEvent(self, n): #Méthode qui déclare un nouvel evevenement sur le client
         self.events[n] = None;
 
-    def AddEventHandler(self, n, cb):
+    def AddEventHandler(self, n, cb): #Méthode qui affecte une fonction de rappel à un evenement
         self.events[n] = cb;
 
-    def TriggerInternalEvent(self, n, args):
+    def TriggerInternalEvent(self, n, args): #Méthode qui execute un evenement interne au client
         self.events[n](args);
 
-    def TriggerServerEvent(self, n, *args):
+    def TriggerServerEvent(self, n, *args): #Méthode qui execute un evenement sur le serveur
         arr = [];
 
         for i in args:
@@ -65,58 +65,58 @@ class ClientEvent:
 
         self.connection.send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
 
-Client = ClientEvent();
+Client = ClientEvent(); #Création du client
 
-def parsejson(data):
+def parsejson(data): #Fonction gérant la transformation de la chaine de caractères en objet et executant l'evenement correspondant
     data = json.loads(data);
     Client.TriggerInternalEvent(data['n'], data['args']);
 
-def Main():
-    address = "127.0.0.1";
+def Main(): #Fonction principale du client
+    address = "127.0.0.1"; #Addresse IP du serveur
 
-    s = socket.socket();
-    Client.connection = s;
-    s.connect((address, 120));
+    s = socket.socket(); #On crée le socket
+    Client.connection = s; #On stocke la connection dans la classe Client
+    s.connect((address, 120)); #On se connecte au serveur
 
     while True:
-        data = s.recv(1024);
-        data = data.decode("UTF-8");
+        data = s.recv(1024); #On receptionne les données du client
+        data = data.decode("UTF-8"); #On converties les données recues dans le bon format
 
         if not data:
-            os._exit(1);
+            os._exit(1); #Si le serveur est indisponible ou coupé on ferme de force le client
             break;
         else:
-            start_new_thread(parsejson, (data, ));
+            start_new_thread(parsejson, (data, )); #On execute de manière séparée la gestion de l'evenement
 
-    s.close();
+    s.close(); #On ferme la connection si le programme est quittée
 
-start_new_thread(Main, ());
+start_new_thread(Main, ()); #On execute la connection au serveur séparement pour ne pas bloquer Tkinter
 
-def actionsgest():
+def actionsgest(): #Fonction verifiant si le joueur a effectué toutes ses actions disponibles et finissant le tour automatiquement le cas échéantg
     while True:
         if player.actions == 0:
-            player.finishround();
+            player.finishround(); #On fini le tour
 
-def OnConnected(args):
+def OnConnected(args): #Fonction executée dès lors que la connection au serveur est établie
     print("-> Connected to server");
-    Client.TriggerServerEvent("onclientconnected");
+    Client.TriggerServerEvent("onclientconnected"); #On envoi au serveur le pong (retour de connection)
 
 Client.RegisterClientEvent("connected");
 Client.AddEventHandler("connected", OnConnected);
 
-def cownoise():
+def cownoise(): #Fonction qui aléatoirement emet un bruit de vache
     ri = randint(0, 3);
 
     if ri == 3:
-        ThreadedSound("./sounds/cow.mp3");
+        ThreadedSound("./sounds/cow.mp3"); #On emet le son
 
-def gamestarted(args):
+def gamestarted(args): #Fonction executée dès lors qu'une partie à commencé
     setInterval(cownoise, 10);
 
 Client.RegisterClientEvent("game:started");
 Client.AddEventHandler("game:started", gamestarted);
 
-def gametime(args):
+def gametime(args): #Fonction métant à jour le temps de la partie en cours
     global timevar;
 
     if args[0] > 1:
@@ -183,7 +183,7 @@ def joueurBrouillard(px, py, oplayer):
     else:
         canvas[lastoplayer[1]][lastoplayer[0]].create_image(20, 20, image = joueur);
 
-def data(args):
+def data(args): #Fonction executée dès lors de la reception des données initiales par le serveur (contenant le labyrinthe, la position de la vache, etc ..)
     global laby;
     global cow;
     global player;
@@ -232,7 +232,7 @@ def data(args):
             if labyrinthe[int(py)][int(px) - 1] != '#':
                 px = px - 1;
 
-        if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)):
+        if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)): #On verifie que le joueur peut bouger et que sa position à bien changée
             if labyrinthe[int(py)][int(px)] == "T": #Handle trap catch
                 print("Player on trap");
                 player.FreezePos(True);
@@ -246,26 +246,26 @@ def data(args):
                 labyrinthe[int(py)][int(px)] = ".";
                 canvas[int(px)][int(py)].create_image(20, 20, image = route);
 
-            player.move(px, py);
-            lastplayer = [px, py];
+            player.move(px, py); #On déplace le joueur
+            lastplayer = [px, py]; #On sauvegarde la dernière position
             joueurBrouillard(px, py, False);
-            ThreadedSound("./sounds/walk.mp3");
+            ThreadedSound("./sounds/walk.mp3"); #On émet un son dès lors que le joueur bouge
 
     fen.bind("<Key>", bouger);
     joueurBrouillard(player.pos.x, player.pos.y, False);
-    start_new_thread(actionsgest, ());
+    start_new_thread(actionsgest, ()); #On execute la gestion des actions réstante de manière séparée pour ne pas bloquer le reste du programme
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
 
-def ConnectedUpdate(args):
+def ConnectedUpdate(args): #Fonction permettant simplement d'informer le joueur qu'un autre s'est connecté
     global player;
     player.AddConnected();
 
 Client.RegisterClientEvent("oplayer:connected");
 Client.AddEventHandler("oplayer:connected", ConnectedUpdate);
 
-def oplayerpos(args):
+def oplayerpos(args): #Fonction gérant l'actualisation de la position de l'autre joueur
     global canvas;
     global lastoplayer;
 
@@ -297,13 +297,13 @@ def revealmap(args):
 
     canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image = cowi);
 
-def revmapthr(args):
+def revmapthr(args): #Fonction permettant de releveler la totalité du labyrinthe à la fin de la partie
     start_new_thread(revealmap, (args, ));
 
 Client.RegisterClientEvent("players:reveal");
 Client.AddEventHandler("players:reveal", revmapthr);
 
-def initd():
+def initd(): #Fonction initiale du programme
     global laby;
     global cow;
     global player;
@@ -313,7 +313,7 @@ def initd():
     # Creation d'un tableau de canvas vides pour y assigner plus facilement les images a l'aide des coordonees de celles ci.
     canvas = [[None for i in range(15)] for i in range(15)]
 
-    player = Player(fen);
+    player = Player(fen); #On crée le joueur
 
     # On positionne tout les canvas sur la fenetre
     for Y in range(15):
@@ -336,9 +336,9 @@ def initd():
         fen.focus_set();
 
     initialisation();
-    fen.mainloop();
+    fen.mainloop(); #Boucle de Tkinter
 
-def stringToTbl():
+def stringToTbl(): #Fonction transformant la chaine de caractères du labyrinthe reçue en tableau 2D
     tbl = [["a" for i in range(15)] for i in range(15)];
     n = 0;
     for y in range(15):
@@ -347,5 +347,5 @@ def stringToTbl():
             n += 1;
     return tbl
 
-if __name__ == "__main__":
+if __name__ == "__main__": #On verifie que le programme n'est pas executé en tant que module d'un autre
     initd();

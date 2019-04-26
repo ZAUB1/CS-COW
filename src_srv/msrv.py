@@ -141,49 +141,48 @@ def client_thread(conn, addr): #Fonction gérant la connection d'un client
 
             Server.TriggerIntervalEvent(data['n'], data['args']); #On execute l'evenement correspondant au n
 
-    Server.conns.remove(conn);
-    conn.close();
+    Server.conns.remove(conn); #On enleve le joueur des connectés
+    conn.close(); #On ferme la connection
 
     print("-> Disconnected from " + addr[0] + ":" + str(addr[1]));
 
-def srvloop():
+def srvloop(): #Fonction principale permettant de prendre en charge la connection d'un joueur
     while True:
-        conn, addr = s.accept();
-        Server.conns.append(conn);
+        conn, addr = s.accept(); #On accepte la connection
+        Server.conns.append(conn); #On ajoute la connection parmis les connectés
 
         print("-> Connected to " + addr[0] + ":" + str(addr[1]));
 
-        start_new_thread(client_thread, (conn, addr, ));
+        start_new_thread(client_thread, (conn, addr, )); #On lance le client dans un thread de manière à l'executer séparement du programme principal
 
-async def OnClientConnected(args):
-    players[Server.GetLastId()] = Player();
+async def OnClientConnected(args): #Fonction executée lors du pong (retour du client à la suite de la connection)
+    players[Server.GetLastId()] = Player(); #On ajoute le client à la liste des joueurs
 
     await asyncio.sleep(0.5);
-    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords(), len(Server.conns));
+    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords(), len(Server.conns)); #On envoi la carte, la position de la vache ainsi que le nombre de joueur connectés au client.
 
 def handleconnection(args):
-    asyncio.run(OnClientConnected(args));
+    asyncio.run(OnClientConnected(args)); #On execute la fonction de manière asynchrone afin de pouvoir attendre un certain temps sans bloquer le reste du programme
 
 Server.AddEventHandler("onclientconnected", handleconnection);
 
 #Player events
 
-async def sendnewpos():
+async def sendnewpos(): #Fonction gérant l'envoi de la position d'un joueur lors de son déplacement aux autres joueurs
     await asyncio.sleep(0.05);
     Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
 
 def moveply(args):
-    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]);
-    #Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
-    asyncio.run(sendnewpos());
+    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]); #On stocke la position du joueur
+    asyncio.run(sendnewpos()); #On execute la fonction de manière asynchrone afin de pouvoir attendre un certain temps sans bloquer le reste du programme
 
 Server.AddEventHandler("player:move", moveply);
 
-def wingame(args):
+def wingame(args): #Fonction executée lorsque la partie est gagnée.
     Server.TriggerGlobalClientEvent("players:reveal");
     Server.SendAllExcept("game:winpop", Server.GetLastId());
 
 Server.RegisterServerEvent("game:win");
 Server.AddEventHandler("game:win", wingame);
 
-srvloop();
+srvloop(); #On lance la boucle du serveur

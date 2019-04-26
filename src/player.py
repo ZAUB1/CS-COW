@@ -3,9 +3,9 @@ from tkinter import *
 from helptext import *
 from sound import ThreadedSound
 
-class Player:
+class Player: #Classe joueur gérant tous les differents paramètres du joueur
     def __init__(self, win):
-        self.pos = Vector2(1, 1);
+        self.pos = Vector2(1, 1); #On initialise la position du joueur en haut de la carte
         self.life = 10;
         self.actions = 2;
 
@@ -20,13 +20,13 @@ class Player:
         self.rostr = "C'est au tour de l'autre joueur";
         self.traptext = HelpText(win, "Appuyez sur E pour attaquer le piege", True, True);
 
-    def move(self, x, y):
+    def move(self, x, y): #Méthode permettant de bouger le joueur
         self.pos.x = x;
         self.pos.y = y;
 
-        self.actions -= 1;
+        self.actions -= 1; #On enleve une action au joueur
 
-        self.Client.TriggerServerEvent("player:move", self.pos.coords());
+        self.Client.TriggerServerEvent("player:move", self.pos.coords()); #On envoi les nouvelles coordonées au serveur
 
     def lookfortraps(self):
         foundt = False;
@@ -59,11 +59,11 @@ class Player:
             self.nexttotrap = False;
             self.traptext.hide();
 
-    def setlife(self, life):
+    def setlife(self, life): #Méthode permettant de changer la vie du joueur
         self.life = life;
         self.updateinfo();
 
-    def SetClient(self, cl, connecteds, laby):
+    def SetClient(self, cl, connecteds, laby): #Méthode executée une fois le client connecté au serveur, permettant de recuperer la connection et le labyrinthe
         self.Client = cl;
         self.connectedplayers = connecteds;
 
@@ -78,33 +78,33 @@ class Player:
         self.Client.RegisterClientEvent("game:lost");
         self.Client.AddEventHandler("game:lost", self.losepop);
 
-    def AddConnected(self):
+    def AddConnected(self): #Méthode permettant d'actualiser le nombre de joueurs connectés
         self.connectedplayers += 1;
         self.updateinfo();
 
-    def SetTxt(self, str):
+    def SetTxt(self, str): #Méthode permettant de changer le contenu des informations principales affichées en haut à droite
         self.stats = str;
 
-    def FreezePos(self, st):
+    def FreezePos(self, st): #Méthode permettant d'empecher le joueur de bouger (lorsqu'il est pris dans un piège ou que ce n'est pas son tour de jouer)
         self.freeze = st;
 
-    def startround(self, shit):
+    def startround(self, shit): #Méthode commencant un tour
         self.freeze = False;
         self.rostr = "C'est votre tour de jouer";
         self.updateinfo();
         self.lookfortraps();
 
-    def finishround(self):
+    def finishround(self): #Méthode finissant un tour
         self.Client.TriggerServerEvent("player:endround");
         self.freeze = True;
         self.actions = 2;
         self.rostr = "C'est au tour de l'autre joueur";
         self.updateinfo();
 
-    def updateinfo(self):
+    def updateinfo(self): #Méthode métant à jour les informations principales en haut à droite
         self.stats.set("Vie: " + str(self.life) + " | Joueurs connectés: " + str(self.connectedplayers) + " | " + str(self.rostr));
 
-    def pop(self, stri, strt):
+    def pop(self, stri, strt): #Méthode permettant d'afficher un popup au joueur
         popup = Tk();
         popup.wm_title(strt);
         label = Label(popup, text = stri);
@@ -113,11 +113,12 @@ class Player:
         B1.pack();
         popup.mainloop();
 
-    def winpop(self, *args):
-        ThreadedSound("./sounds/victory.mp3");
-        self.pop("Partie gagnée", "Gagné");
+    def winpop(self, *args): #Méthode utilisée lorsque la partie est gagnée
+        self.FreezePos(True);
+        ThreadedSound("./sounds/victory.mp3"); #On émet un son de victoire
+        self.pop("Partie gagnée", "Gagné"); #On crée un popup de victoire
 
-    def losepop(self, *args):
+    def losepop(self, *args): #Méthode utilisée lorsque la partie est perdue
         self.FreezePos(True);
         ThreadedSound("./sounds/defeat.mp3");
         self.pop("Partie perdu (temps écoulé)", "Perdu");

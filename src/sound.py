@@ -1,10 +1,10 @@
-def SoundWin(sound):
+def SoundWin(sound): #Fonction pour emettre un son depuis un ordinateur sous Windows
     from ctypes import c_buffer, windll;
     from random import random;
     from time import sleep;
     from sys import getfilesystemencoding;
 
-    def WinCommand(*command):
+    def WinCommand(*command): #Fonction permettant d'executer une commande dans le terminal windows depuis l'instance python
         buf = c_buffer(255);
         command = ' '.join(command).encode(getfilesystemencoding());
         errorCode = int(windll.winmm.mciSendStringA(command, buf, 254, 0));
@@ -17,14 +17,14 @@ def SoundWin(sound):
         return buf.value
 
     alias = 'playsound_' + str(random());
-    WinCommand('open "' + sound + '" alias', alias);
-    WinCommand('set', alias, 'time format milliseconds');
-    durationInMS = WinCommand('status', alias, 'length');
-    WinCommand('play', alias, 'from 0 to', durationInMS.decode());
+    WinCommand('open "' + sound + '" alias', alias); #On ouvre le fichier audio
+    WinCommand('set', alias, 'time format milliseconds'); #On donne au systeme une identification du son
+    durationInMS = WinCommand('status', alias, 'length'); #On determine le temps en ms du fichier audio
+    WinCommand('play', alias, 'from 0 to', durationInMS.decode()); #On demande au système de jouer le fichier audio pendant sa durée
 
     sleep((float(durationInMS) + 500.0) / 1000.0);
 
-def SoundLinux(sound):
+def SoundLinux(sound): #Fonction pour emettre un son depuis un ordinateur sous Linux à l'aide du binding GStreamer
     import os;
     from urllib.request import pathname2url;
     import gi;
@@ -47,12 +47,12 @@ def SoundLinux(sound):
 from platform import system;
 system = system();
 
-if system == 'Windows':
+if system == 'Windows': #On verifie si l'ordinateur tourne sous windows
     playsound = SoundWin;
 else:
     playsound = SoundLinux;
 
 from _thread import start_new_thread;
 
-def ThreadedSound(sound):
+def ThreadedSound(sound): #Fonction permettant d'emmettre un son sans bloquer le programme
     start_new_thread(playsound, (sound, ));
