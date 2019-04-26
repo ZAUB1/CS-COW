@@ -11,60 +11,60 @@ from player import *
 from game import *
 
 HOST = "";
-PORT = 120;
+PORT = 120; #Definition du port à contacter pour se connecter au serveur
 
 conn = None;
 players = {};
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); #Création du serveur avec le protocole de sockets
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
 
-map = genLaby();
-cow = Cow(map);
+map = genLaby(); #Generation du labyrinthe
+cow = Cow(map); #Creation de la vache
 
-def setInterval(func, time):
+def setInterval(func, time): #Fonction permettant d'executer toutes les n secondes une autre fonction
     e = threading.Event();
     while not e.wait(time):
         func();
 
-class QItem:
+class QItem: #Classe permettant de creer un objet à envoyer depuis le serveur
     def __init__(self, client, stri):
         self.client = client;
         self.stri = stri;
 
-class SrvEvents:
+class SrvEvents: #Classe principale du serveur
     def __init__(self):
         self.sevents = {};
         self.conns = [];
         self.connsbyid = {};
         self.lastsource = None;
         self.lastid = None;
-        self.queued = [];
+        self.queued = []; #File d'attente pour envoyer les evenements
 
         start_new_thread(self.startsendloop, ());
 
-    def sendloop(self):
-        if len(self.queued) > 0:
+    def sendloop(self): #Méthode executée dans un intervalle gérant l'envoi differé des evenements au clients
+        if len(self.queued) > 0: #On verifie qu'il y a des evenements dans la file d'attente
             print(self.queued[0].stri);
             self.queued[0].client.send(bytes(self.queued[0].stri, "utf-8"));
             del self.queued[0];
 
     def startsendloop(self):
-        setInterval(self.sendloop, 0.2);
+        setInterval(self.sendloop, 0.2); #Lancement de l'intervalle pour gerer l'envoi des evenements
 
-    def addtosend(self, client, stri):
+    def addtosend(self, client, stri): #Méthode ajoutant un evenement à la file d'attente
         self.queued.append(QItem(client, stri));
 
-    def RegisterServerEvent(self, n):
+    def RegisterServerEvent(self, n): #Méthode qui déclare un nouvel evevenement sur le serveur
         self.sevents[n] = None;
 
-    def TriggerIntervalEvent(self, n, args):
+    def TriggerIntervalEvent(self, n, args): #Méthode qui execute un evenement interne au serveur
         self.sevents[n](args);
 
-    def AddEventHandler(self, n, cb):
+    def AddEventHandler(self, n, cb): #Méthode qui affecte une fonction de rappel à un evenement
         self.sevents[n] = cb;
 
-    def TriggerGlobalClientEvent(self, n, *args):
+    def TriggerGlobalClientEvent(self, n, *args): #Méthode qui execute un evenement sur tous les clients
         arr = [];
 
         for i in args:
@@ -73,7 +73,7 @@ class SrvEvents:
         for i in range(len(self.conns)):
             self.addtosend(self.conns[i], json.dumps({"n": n, "args": arr}));
 
-    def TriggerClientEvent(self, client, n, *args):
+    def TriggerClientEvent(self, client, n, *args): #Méthode qui execute un evenement sur le client spécifié
         arr = [];
 
         for i in args:
@@ -81,7 +81,7 @@ class SrvEvents:
 
         self.addtosend(client, json.dumps({"n": n, "args": arr}));
 
-    def SendAllExcept(self, n, client, *args):
+    def SendAllExcept(self, n, client, *args): #Méthode qui execute un evenement sur tous les clients sauf celui spécifié
         arr = [];
 
         for i in args:
@@ -91,25 +91,25 @@ class SrvEvents:
             if (self.conns[i].getpeername()[1] != client) == True:
                 self.addtosend(self.conns[i], json.dumps({"n": n, "args": arr}));
 
-    def GetLastSource(self):
+    def GetLastSource(self): #Méthode qui retourne le dernier client à avoir envoyé au serveur
         return self.lastsource;
 
-    def GetLastId(self):
+    def GetLastId(self): #Méthode qui retourne l'indentifiant du dernier client à avoir envoyé au serveur
         return self.lastid;
 
-Server = SrvEvents();
+Server = SrvEvents(); #Création de la classe serveur
 
-game = Game(Server);
+game = Game(Server); #Création de la partie
 
 print(":: Socket Created");
 
-s.bind((HOST, PORT));
+s.bind((HOST, PORT)); #On affecte le socket au port souhaité
 print(":: Socket port " + str(PORT));
 
-s.listen(0);
+s.listen(0); #On lance l'ecoute de connection
 print(":: Listening...");
 
-def prompt():
+def prompt(): #Fonction gérant les entrées dans la console serveur
     while True:
         line = sys.stdin.readline()
 
@@ -119,27 +119,27 @@ def prompt():
         elif "exit" in line:
             os._exit(1)
 
-start_new_thread(prompt, ());
+start_new_thread(prompt, ()); #On lance la fonction dans un autre thread que le principal
 
-def client_thread(conn, addr):
+def client_thread(conn, addr): #Fonction gérant la connection d'un client
     Server.TriggerClientEvent(conn, "connected");
 
-    if len(Server.conns) > 1:
+    if len(Server.conns) > 1: #On lance la partie si il y a plus d'un joueur
         Server.SendAllExcept("oplayer:connected", conn.getpeername()[1]);
         game.start();
 
     while True:
-        data = conn.recv(1024);
-        data = data.decode("UTF-8");
+        data = conn.recv(1024); #On receptionne les données du client
+        data = data.decode("UTF-8"); #On converties les données recues dans le bon format
 
         if not data:
-            break;
+            break; #On ferme la connection dans le cas ou le client serait quitté de manière imprevue
         else:
-            data = json.loads(data);
-            Server.lastsource = conn;
-            Server.lastid = conn.getpeername()[1];
+            data = json.loads(data); #On transforme la chaine de caractères en objet
+            Server.lastsource = conn; #On affecte la dernière source
+            Server.lastid = conn.getpeername()[1]; #On affecte le dernier identifiant du joueur (unique puisqu'il s'agit du port utilisé pour le lien)
 
-            Server.TriggerIntervalEvent(data['n'], data['args']);
+            Server.TriggerIntervalEvent(data['n'], data['args']); #On execute l'evenement correspondant au n
 
     Server.conns.remove(conn);
     conn.close();
