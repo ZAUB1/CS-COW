@@ -1,6 +1,7 @@
 import socket
 import sys
 from _thread import start_new_thread
+import threading
 import json
 import os
 import asyncio
@@ -21,6 +22,16 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
 map = genLaby();
 cow = Cow(map);
 
+def setInterval(func, time):
+    e = threading.Event();
+    while not e.wait(time):
+        func();
+
+class QItem:
+    def __init__(self, client, stri):
+        self.client = client;
+        self.stri = stri;
+
 class SrvEvents:
     def __init__(self):
         self.sevents = {};
@@ -28,6 +39,21 @@ class SrvEvents:
         self.connsbyid = {};
         self.lastsource = None;
         self.lastid = None;
+        self.queued = [];
+
+        start_new_thread(self.startsendloop, ());
+
+    def sendloop(self):
+        if len(self.queued) > 0:
+            print(self.queued[0].stri);
+            self.queued[0].client.send(bytes(self.queued[0].stri, "utf-8"));
+            del self.queued[0];
+
+    def startsendloop(self):
+        setInterval(self.sendloop, 0.2);
+
+    def addtosend(self, client, stri):
+        self.queued.append(QItem(client, stri));
 
     def RegisterServerEvent(self, n):
         self.sevents[n] = None;
@@ -45,7 +71,7 @@ class SrvEvents:
             arr.append(i);
 
         for i in range(len(self.conns)):
-            self.conns[i].send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+            self.addtosend(self.conns[i], json.dumps({"n": n, "args": arr}));
 
     def TriggerClientEvent(self, client, n, *args):
         arr = [];
@@ -53,7 +79,7 @@ class SrvEvents:
         for i in args:
             arr.append(i);
 
-        client.send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+        self.addtosend(client, json.dumps({"n": n, "args": arr}));
 
     def SendAllExcept(self, n, client, *args):
         arr = [];
@@ -63,7 +89,7 @@ class SrvEvents:
 
         for i in range(len(self.conns)):
             if (self.conns[i].getpeername()[1] != client) == True:
-                self.conns[i].send(bytes(json.dumps({"n": n, "args": arr}), 'utf-8'));
+                self.addtosend(self.conns[i], json.dumps({"n": n, "args": arr}));
 
     def GetLastSource(self):
         return self.lastsource;

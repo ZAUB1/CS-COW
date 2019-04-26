@@ -15,7 +15,7 @@ class Game:
             func();
 
     async def turn(self):
-        await asyncio.sleep(0.05);
+        await asyncio.sleep(0.1);
         self.Server.TriggerClientEvent(self.Server.conns[self.playerturn], "game:turn");
 
     def lose(self):
@@ -30,6 +30,10 @@ class Game:
 
         self.Server.TriggerGlobalClientEvent("game:time", self.currenttime);
 
+    async def sendstart(self):
+        await asyncio.sleep(0.5);
+        self.Server.TriggerGlobalClientEvent("game:started");
+
     def start(self):
         self.Server.RegisterServerEvent("player:endround");
         self.Server.AddEventHandler("player:endround", self.Next);
@@ -38,7 +42,7 @@ class Game:
 
         start_new_thread(self.setInterval, (self.countdown, 1, ));
 
-        self.Server.TriggerGlobalClientEvent("game:started");
+        asyncio.run(self.sendstart());
 
     def Next(self, shit):
         if self.playerturn == 0:
