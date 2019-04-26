@@ -1,4 +1,5 @@
 import py_compile;
+import shutil;
 
 SERVER_FILES = [
     "game",
@@ -22,3 +23,17 @@ CLIENT_FILES = [
 
 for i in CLIENT_FILES:
     py_compile.compile("./src/" + i + ".py", "./build/client/" + i + ".pyc");
+
+try:
+    shutil.copytree("./src/images", "./build/client/images");
+except shutil.Error as e:
+    print(e)
+except OSError as e:
+    print(e)
+
+try:
+    shutil.copytree("./src/sounds", "./build/client/sounds");
+except shutil.Error as e:
+    print(e)
+except OSError as e:
+    print(e)
