@@ -5,6 +5,7 @@ CS COW is a standalone game made with python. It's actually multiplayer that's w
 * ZAUB1: Main runtime, server / client communication and game mechanics
 * Volham: Random map generation (./src_srv/map.py)
 * Aerhino: Rendering from map string using Tkinter
+* Ouilli: Game assests (images)
 ## How to run ?
 Here are the basics commands to run the thing (:warning: Requires node and npm to run this way)
 
