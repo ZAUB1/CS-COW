@@ -7,6 +7,7 @@ CS COW is a standalone game made with python. It's actually multiplayer that's w
 * Aerhino: Rendering from map string using Tkinter
 ## How to run ?
 Here are the basics commands to run the thing (:warning: Requires node and npm to run this way)
+
 |                |Command                        |What for ?                   |
 |----------------|-------------------------------|-----------------------------|
 |Start server    |`npm run server`         	 |Starts the server and listens for clients.            |
