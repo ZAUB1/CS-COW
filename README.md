@@ -13,3 +13,8 @@ Here are the basics commands to run the thing (:warning: Requires node and npm t
 |----------------|-------------------------------|-----------------------------|
 |Start server    |`npm run server`         	 |Starts the server and listens for clients.            |
 |Start client    |`npm run client`               |Starts a client|
+## How to build ?
+```sh
+# Build (both server & client)
+$ python build.py
+```
