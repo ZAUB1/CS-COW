@@ -5,9 +5,6 @@ import os
 from platform import system;
 system = system();
 
-from contextlib import contextmanager
-import sys, os
-
 from pkgutil import iter_modules
 
 def module_exists(module_name):
@@ -73,6 +70,5 @@ else:
     srvlaunch = open("./server/run.sh", 'w')
     srvlaunch.write("sudo py -3.7 msrv.pyc");
     srvlaunch.close();
-
 
 print("Build completed successfully");
