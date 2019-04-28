@@ -18,3 +18,5 @@ Here are the basics commands to run the thing (:warning: Requires node and npm t
 # Build (both server & client)
 $ python build.py
 ```
+## Screenshot ?
+![screenshot](https://i.imgur.com/pz3bjOD.png)
