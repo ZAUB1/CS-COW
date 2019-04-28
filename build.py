@@ -26,7 +26,6 @@ SERVER_FILES = [
     "map",
     "player",
     "vector",
-    "msrv"
 ]
 
 CLIENT_MODULES = [
@@ -37,14 +36,25 @@ CLIENT_MODULES = [
     "helptext"
 ]
 
-for i in SERVER_FILES:
-    print("[SERVER FILES] Compiling " + i + ".py");
-    py_compile.compile("./src_srv/" + i + ".py", "./build/server/" + i + ".pyc");
+os.chdir("./src_srv");
 
-os.chdir("./src");
+print("Building server");
 
 if system == 'Windows':
-    subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp");
+    subprocess.call(r"pyinstaller server.py --distpath ../build --workpath ../build/temp --specpath ../build/temp");
+else:
+    subprocess.call(r"pyinstaller server.py --distpath ../build --workpath ../build/temp --specpath ../build/temp", shell = True);
+
+for i in SERVER_FILES:
+    print("[SERVER FILES] Compiling " + i + ".py");
+    py_compile.compile("./" + i + ".py", "../build/server/" + i + ".pyc");
+
+os.chdir("../src");
+
+print("Building client");
+
+if system == 'Windows':
+    subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp --icon=./images/favicon.ico");
 else:
     subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp", shell = True);
 
@@ -75,12 +85,13 @@ shutil.rmtree("./temp");
 print("Creating server launcher");
 if system == 'Windows':
     srvlaunch = open("./server/run.cmd", 'w')
-    srvlaunch.write("py -3.7 msrv.pyc");
+    srvlaunch.write("server.exe");
     srvlaunch.close();
 else:
     srvlaunch = open("./server/run.sh", 'w')
-    srvlaunch.write("sudo python msrv.pyc");
+    srvlaunch.write("sudo ./server");
     srvlaunch.close();
+    subprocess.call(r"sudo chmod +x ./server/server", shell = True);
     subprocess.call(r"sudo chmod +x ./server/run.sh", shell = True);
 
 print("Build completed successfully");

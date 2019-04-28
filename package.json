@@ -4,7 +4,7 @@
   "description": "## Joueur ``` - Revelation du brouillard en bougeant - Tour par tour - Mouvements / Attaques \t- 2 Moves \t- 1 Move, 1 Attaque \t- 2 Attaques ```",
   "main": "index.js",
   "scripts": {
-    "server": "python ./src_srv/msrv.py",
+    "server": "python ./src_srv/server.py",
     "client": "cd ./src/ && python client.py"
   },
   "repository": {
