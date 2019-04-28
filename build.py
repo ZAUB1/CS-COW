@@ -74,6 +74,31 @@ except shutil.Error as e:
 except OSError as e:
     print(e)
 
+if system == 'Windows':
+    print("[ASSETS] Copying libs");
+
+    try:
+        shutil.copyfile("./lib/ctypes.pyd", "../build/client/ctypes.pyd");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+
+    try:
+        shutil.copyfile("./lib/ctypes.pyd", "../build/client/_ctypes.pyd");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+
+    try:
+        print("[ASSETS] Copying sounds");
+        shutil.copytree("./lib/ctypes", "../build/client/ctypes");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+
 for i in CLIENT_MODULES:
     print("[CLIENT MODULES] Compiling " + i + ".py");
     py_compile.compile(i + ".py", "../build/client/" + i + ".pyc");
