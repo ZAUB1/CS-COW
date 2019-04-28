@@ -81,6 +81,6 @@ else:
     srvlaunch = open("./server/run.sh", 'w')
     srvlaunch.write("sudo python msrv.pyc");
     srvlaunch.close();
-    subprocess.call(r"sudo chmod +x ./server/run.sh");
+    subprocess.call(r"sudo chmod +x ./server/run.sh", shell = True);
 
 print("Build completed successfully");
