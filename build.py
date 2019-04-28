@@ -19,7 +19,7 @@ if module_exists("pyinstaller") == False:
     if system == 'Windows':
         subprocess.call(r"py -m pip install pyinstaller");
     else:
-        subprocess.call(r"python -m pip install pyinstaller");
+        subprocess.call(r"sudo python -m pip install pyinstaller", shell = True);
 
 SERVER_FILES = [
     "game",
@@ -42,7 +42,11 @@ for i in SERVER_FILES:
     py_compile.compile("./src_srv/" + i + ".py", "./build/server/" + i + ".pyc");
 
 os.chdir("./src");
-subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp");
+
+if system == 'Windows':
+    subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp");
+else:
+    subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp", shell = True);
 
 try:
     print("[ASSETS] Copying images");
@@ -77,5 +81,6 @@ else:
     srvlaunch = open("./server/run.sh", 'w')
     srvlaunch.write("sudo python msrv.pyc");
     srvlaunch.close();
+    subprocess.call(r"sudo chmod +x ./server/run.sh");
 
 print("Build completed successfully");
