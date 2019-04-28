@@ -10,9 +10,16 @@ from pkgutil import iter_modules
 def module_exists(module_name):
     return module_name in (name for loader, name, ispkg in iter_modules())
 
+if (module_exists("pip") == False):
+    print("[ERROR] Pip isn't installed cannot continue build");
+    os._exit(1);
+
 if module_exists("pyinstaller") == False:
     print("Installing missing package :", "pyinstaller");
-    subprocess.call(r"py -m pip install pyinstaller");
+    if system == 'Windows':
+        subprocess.call(r"py -m pip install pyinstaller");
+    else:
+        subprocess.call(r"python -m pip install pyinstaller");
 
 SERVER_FILES = [
     "game",
@@ -68,7 +75,7 @@ if system == 'Windows':
     srvlaunch.close();
 else:
     srvlaunch = open("./server/run.sh", 'w')
-    srvlaunch.write("sudo py -3.7 msrv.pyc");
+    srvlaunch.write("sudo python msrv.pyc");
     srvlaunch.close();
 
 print("Build completed successfully");
