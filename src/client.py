@@ -12,6 +12,8 @@ import sys
 
 from sound import playsound, ThreadedSound
 
+g_address = "127.0.0.1"; #Addresse IP du serveur
+
 g_fen = Tk();
 g_fen.title('CS COW');
 g_fen.geometry("600x600");
@@ -67,26 +69,53 @@ class ClientEvent: #Classe principale du client
 
 Client = ClientEvent(); #Création du client
 
+def prompt(): #Fonction gérant les entrées dans la console serveur
+    global g_address;
+
+    while True:
+        line = sys.stdin.readline()
+
+        if "connect" in line:
+            ipentered = "";
+
+            for i in range(8, len(line) - 1):
+                ipentered += str(line[i]);
+
+            g_address = ipentered;
+            start_new_thread(Main, ());
+        elif "exit" in line:
+            os._exit(1)
+
+start_new_thread(prompt, ()); #On lance la fonction dans un autre thread que le principal
+
 def parsejson(data): #Fonction gérant la transformation de la chaine de caractères en objet et executant l'evenement correspondant
     data = json.loads(data);
     Client.TriggerInternalEvent(data['n'], data['args']);
 
 def Main(): #Fonction principale du client
-    address = "127.0.0.1"; #Addresse IP du serveur
+    connected = False
 
     s = socket.socket(); #On crée le socket
     Client.connection = s; #On stocke la connection dans la classe Client
-    s.connect((address, 120)); #On se connecte au serveur
+
+    try:
+        s.connect((g_address, 120)); #On se connecte au serveur
+        connected = True;
+    except Exception as e:
+        e = str(e);
+        if "111" in e:
+            print("Can't connect to server, is the IP right ? (if not local IP type 'connect YOUR_IP' in the client console");
 
     while True:
-        data = s.recv(1024); #On receptionne les données du client
-        data = data.decode("UTF-8"); #On converties les données recues dans le bon format
+        if connected == True:
+            data = s.recv(1024); #On receptionne les données du client
+            data = data.decode("UTF-8"); #On converties les données recues dans le bon format
 
-        if not data:
-            os._exit(1); #Si le serveur est indisponible ou coupé on ferme de force le client
-            break;
-        else:
-            start_new_thread(parsejson, (data, )); #On execute de manière séparée la gestion de l'evenement
+            if not data:
+                os._exit(1); #Si le serveur est indisponible ou coupé on ferme de force le client
+                break;
+            else:
+                start_new_thread(parsejson, (data, )); #On execute de manière séparée la gestion de l'evenement
 
     s.close(); #On ferme la connection si le programme est quittée
 
@@ -244,7 +273,7 @@ def data(args): #Fonction executée dès lors de la reception des données initi
                 g_player.setlife(g_player.life + 2);
                 g_player.updateinfo();
                 g_labyrinthe[int(py)][int(px)] = ".";
-                g_canvas[int(px)][int(py)].create_image(20, 20, image = g_route);
+                g_canvas[int(py)][int(px)].create_image(20, 20, image = g_route);
 
             g_player.move(px, py); #On déplace le joueur
             g_lastPlayer = [px, py]; #On sauvegarde la dernière position
