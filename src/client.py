@@ -37,6 +37,8 @@ g_canvas = None;
 g_labyrinthe = None;
 g_timevar = None;
 
+g_isTimed = False;
+
 g_lastPlayer = [1, 1]; #Positions initiales des joueurs
 g_lastOPlayer = [1, 1];
 
@@ -147,11 +149,13 @@ Client.AddEventHandler("game:started", gamestarted);
 
 def gametime(args): #Fonction métant à jour le temps de la partie en cours
     global g_timevar;
+    global g_isTimed;
 
-    if args[0] > 1:
-        g_timevar.set("Temps restant : " + str(args[0]) + " secondes");
-    else:
-        g_timevar.set("Temps restant : 1 seconde");
+    if g_isTimed == True:
+        if args[0] > 1:
+            g_timevar.set("Temps restant : " + str(args[0]) + " secondes");
+        else:
+            g_timevar.set("Temps restant : 1 seconde");
 
 Client.RegisterClientEvent("game:time");
 Client.AddEventHandler("game:time", gametime);
@@ -218,6 +222,7 @@ def data(args): #Fonction executée dès lors de la reception des données initi
     global g_player;
     global g_lastPlayer;
     global g_timevar;
+    global g_isTimed;
 
     g_laby = args[0];
     # Assignation du tableau a "labyrinthe".
@@ -238,6 +243,7 @@ def data(args): #Fonction executée dès lors de la reception des données initi
     timelab.place(x = 5, y = 570);
 
     g_timevar.set("Temps restant : 300 secondes");
+    g_isTimed = True;
 
     # Fonction qui gere le deplacement du joueur a partir des touches pressees et qui s'assure que le joueur ne peux pas avancer dans un mur.
     # Elle envoie ensuite les futures coordonees du joueur a "joueurBrouilard" pous qu'il soit affiche.
