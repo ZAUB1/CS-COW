@@ -13,14 +13,14 @@ from game import *
 HOST = "";
 PORT = 120; #Definition du port à contacter pour se connecter au serveur
 
-conn = None;
-players = {};
+g_conn = None;
+g_players = {};
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); #Création du serveur avec le protocole de sockets
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
+g_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); #Création du serveur avec le protocole de sockets
+g_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1);
 
-map = genLaby(); #Generation du labyrinthe
-cow = Cow(map); #Creation de la vache
+g_map = genLaby(); #Generation du labyrinthe
+g_cow = Cow(g_map); #Creation de la vache
 
 def setInterval(func, time): #Fonction permettant d'executer toutes les n secondes une autre fonction
     e = threading.Event();
@@ -103,10 +103,10 @@ game = Game(Server); #Création de la partie
 
 print(":: Socket Created");
 
-s.bind((HOST, PORT)); #On affecte le socket au port souhaité
+g_s.bind((HOST, PORT)); #On affecte le socket au port souhaité
 print(":: Socket port " + str(PORT));
 
-s.listen(0); #On lance l'ecoute de connection
+g_s.listen(0); #On lance l'ecoute de connection
 print(":: Listening...");
 
 def prompt(): #Fonction gérant les entrées dans la console serveur
@@ -148,7 +148,7 @@ def client_thread(conn, addr): #Fonction gérant la connection d'un client
 
 def srvloop(): #Fonction principale permettant de prendre en charge la connection d'un joueur
     while True:
-        conn, addr = s.accept(); #On accepte la connection
+        conn, addr = g_s.accept(); #On accepte la connection
         Server.conns.append(conn); #On ajoute la connection parmis les connectés
 
         print("-> Connected to " + addr[0] + ":" + str(addr[1]));
@@ -156,10 +156,10 @@ def srvloop(): #Fonction principale permettant de prendre en charge la connectio
         start_new_thread(client_thread, (conn, addr, )); #On lance le client dans un thread de manière à l'executer séparement du programme principal
 
 async def OnClientConnected(args): #Fonction executée lors du pong (retour du client à la suite de la connection)
-    players[Server.GetLastId()] = Player(); #On ajoute le client à la liste des joueurs
+    g_players[Server.GetLastId()] = Player(); #On ajoute le client à la liste des joueurs
 
     await asyncio.sleep(0.5);
-    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(map), cow.pos.coords(), len(Server.conns)); #On envoi la carte, la position de la vache ainsi que le nombre de joueur connectés au client.
+    Server.TriggerClientEvent(Server.GetLastSource(), "firstdata", MaptoString(g_map), g_cow.pos.coords(), len(Server.conns)); #On envoi la carte, la position de la vache ainsi que le nombre de joueur connectés au client.
 
 def handleconnection(args):
     asyncio.run(OnClientConnected(args)); #On execute la fonction de manière asynchrone afin de pouvoir attendre un certain temps sans bloquer le reste du programme
@@ -170,10 +170,10 @@ Server.AddEventHandler("onclientconnected", handleconnection);
 
 async def sendnewpos(): #Fonction gérant l'envoi de la position d'un joueur lors de son déplacement aux autres joueurs
     await asyncio.sleep(0.05);
-    Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), players[Server.GetLastId()].pos.coords());
+    Server.SendAllExcept("oplayer:newpos", Server.GetLastId(), g_players[Server.GetLastId()].pos.coords());
 
 def moveply(args):
-    players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]); #On stocke la position du joueur
+    g_players[Server.GetLastId()].pos.Set(args[0][0], args[0][1]); #On stocke la position du joueur
     asyncio.run(sendnewpos()); #On execute la fonction de manière asynchrone afin de pouvoir attendre un certain temps sans bloquer le reste du programme
 
 Server.AddEventHandler("player:move", moveply);

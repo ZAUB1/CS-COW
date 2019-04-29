@@ -12,31 +12,31 @@ import sys
 
 from sound import playsound, ThreadedSound
 
-fen = Tk();
-fen.title('CS COW');
-fen.geometry("600x600");
-fen.resizable(width = False, height = False);
+g_fen = Tk();
+g_fen.title('CS COW');
+g_fen.geometry("600x600");
+g_fen.resizable(width = False, height = False);
 
-mur = PhotoImage(file = 'images/mur.png');
-piege = PhotoImage(file = 'images/piege.png');
-soin = PhotoImage(file = 'images/soin.png');
-route = PhotoImage(file = 'images/route.png');
-noir = PhotoImage(file = 'images/warfog.png');
-joueur = PhotoImage(file = 'images/player.png');
-joueur2 = PhotoImage(file = "images/player2.png");
-cowi = PhotoImage(file = "images/cow.png");
+g_mur = PhotoImage(file = 'images/mur.png');
+g_piege = PhotoImage(file = 'images/piege.png');
+g_soin = PhotoImage(file = 'images/soin.png');
+g_route = PhotoImage(file = 'images/route.png');
+g_noir = PhotoImage(file = 'images/warfog.png');
+g_joueur = PhotoImage(file = 'images/player.png');
+g_joueur2 = PhotoImage(file = "images/player2.png");
+g_cowi = PhotoImage(file = "images/cow.png");
 
-#fen.iconbitmap("favicon.ico");
+#g_fen.iconbitmap("favicon.ico");
 
-laby = None;
-cow = None;
-player = None;
-canvas = None;
-labyrinthe = None;
-timevar = None;
+g_laby = None;
+g_cow = None;
+g_player = None;
+g_canvas = None;
+g_labyrinthe = None;
+g_timevar = None;
 
-lastplayer = [1, 1]; #Positions initiales des joueurs
-lastoplayer = [1, 1];
+g_lastPlayer = [1, 1]; #Positions initiales des joueurs
+g_lastOPlayer = [1, 1];
 
 def setInterval(func, time): #Fonction permettant d'executer toutes les n secondes une autre fonction
     e = threading.Event();
@@ -94,8 +94,8 @@ start_new_thread(Main, ()); #On execute la connection au serveur séparement pou
 
 def actionsgest(): #Fonction verifiant si le joueur a effectué toutes ses actions disponibles et finissant le tour automatiquement le cas échéantg
     while True:
-        if player.actions == 0:
-            player.finishround(); #On fini le tour
+        if g_player.actions == 0:
+            g_player.finishround(); #On fini le tour
 
 def OnConnected(args): #Fonction executée dès lors que la connection au serveur est établie
     print("-> Connected to server");
@@ -117,38 +117,38 @@ Client.RegisterClientEvent("game:started");
 Client.AddEventHandler("game:started", gamestarted);
 
 def gametime(args): #Fonction métant à jour le temps de la partie en cours
-    global timevar;
+    global g_timevar;
 
     if args[0] > 1:
-        timevar.set("Temps restant : " + str(args[0]) + " secondes");
+        g_timevar.set("Temps restant : " + str(args[0]) + " secondes");
     else:
-        timevar.set("Temps restant : 1 seconde");
+        g_timevar.set("Temps restant : 1 seconde");
 
 Client.RegisterClientEvent("game:time");
 Client.AddEventHandler("game:time", gametime);
 
 # Fonction qui gere l'affichage du terrain au fur et a mesur de l'avancee du joueur.
 def joueurBrouillard(px, py, oplayer):
-    global canvas;
-    global lastplayer;
-    global lastoplayer;
-    global player;
-    global labyrinthe;
+    global g_canvas;
+    global g_lastPlayer;
+    global g_lastOPlayer;
+    global g_player;
+    global g_labyrinthe;
 
-    labyrinthe = stringToTbl();
+    g_labyrinthe = stringToTbl();
 
     # Affichage du sol sous le joueur et le joueur lui meme.
-    if labyrinthe[py][px] == 'T':
-        canvas[py][px].create_image(20, 20, image = piege);
-    elif labyrinthe[py][px] == '.':
-        canvas[py][px].create_image(20, 20, image = route);
-    elif labyrinthe[py][px] == 'H':
-        canvas[py][px].create_image(20, 20, image = soin);
+    if g_labyrinthe[py][px] == 'T':
+        g_canvas[py][px].create_image(20, 20, image = g_piege);
+    elif g_labyrinthe[py][px] == '.':
+        g_canvas[py][px].create_image(20, 20, image = g_route);
+    elif g_labyrinthe[py][px] == 'H':
+        g_canvas[py][px].create_image(20, 20, image = g_soin);
 
     if oplayer == True:
-        canvas[py][px].create_image(20, 20, image = joueur);
+        g_canvas[py][px].create_image(20, 20, image = g_joueur);
     else:
-        canvas[py][px].create_image(20, 20, image = joueur2);
+        g_canvas[py][px].create_image(20, 20, image = g_joueur2);
 
     # Gestion de la vision du joueur autour de sa case.
     for i in range(4):
@@ -165,137 +165,137 @@ def joueurBrouillard(px, py, oplayer):
             cx = px;
             cy = py + 1;
 
-        if labyrinthe[cy][cx] == '#':
-            canvas[cy][cx].create_image(20, 20, image = mur);
-        elif labyrinthe[cy][cx] == 'T':
-            canvas[cy][cx].create_image(20, 20, image = piege);
-        elif labyrinthe[cy][cx] == '.':
-            canvas[cy][cx].create_image(20, 20, image = route);
-        elif labyrinthe[cy][cx] == 'H':
-            canvas[cy][cx].create_image(20, 20, image = soin);
+        if g_labyrinthe[cy][cx] == '#':
+            g_canvas[cy][cx].create_image(20, 20, image = g_mur);
+        elif g_labyrinthe[cy][cx] == 'T':
+            g_canvas[cy][cx].create_image(20, 20, image = g_piege);
+        elif g_labyrinthe[cy][cx] == '.':
+            g_canvas[cy][cx].create_image(20, 20, image = g_route);
+        elif g_labyrinthe[cy][cx] == 'H':
+            g_canvas[cy][cx].create_image(20, 20, image = g_soin);
 
-        if (cow.pos.x == cx) and (cow.pos.y == cy):
-            player.win();
-            canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image = cowi);
+        if (g_cow.pos.x == cx) and (g_cow.pos.y == cy):
+            g_player.win();
+            g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = cowi);
 
     if oplayer == True:
-        canvas[lastplayer[1]][lastplayer[0]].create_image(20, 20, image = joueur2);
+        g_canvas[g_lastPlayer[1]][g_lastPlayer[0]].create_image(20, 20, image = g_joueur2);
     else:
-        canvas[lastoplayer[1]][lastoplayer[0]].create_image(20, 20, image = joueur);
+        g_canvas[g_lastOPlayer[1]][g_lastOPlayer[0]].create_image(20, 20, image = g_joueur);
 
 def data(args): #Fonction executée dès lors de la reception des données initiales par le serveur (contenant le labyrinthe, la position de la vache, etc ..)
-    global laby;
-    global cow;
-    global player;
-    global lastplayer;
-    global timevar;
+    global g_laby;
+    global g_cow;
+    global g_player;
+    global g_lastPlayer;
+    global g_timevar;
 
-    laby = args[0];
+    g_laby = args[0];
     # Assignation du tableau a "labyrinthe".
-    labyrinthe = stringToTbl();
+    g_labyrinthe = stringToTbl();
 
-    cow = Cow(args[1][0], args[1][1]);
-    player.SetClient(Client, args[2], labyrinthe);
+    g_cow = Cow(args[1][0], args[1][1]);
+    g_player.SetClient(Client, args[2], g_labyrinthe);
 
     stats = StringVar();
-    statslab = Label(fen, textvariable = stats);
+    statslab = Label(g_fen, textvariable = stats);
     statslab.place(x = 5, y = 5);
 
-    player.SetTxt(stats);
+    g_player.SetTxt(stats);
     stats.set("Vie: " + str(10) + " | Joueurs connectés: " + str(args[2]) + " | En attente de joueur");
 
-    timevar = StringVar();
-    timelab = Label(fen, textvariable = timevar);
+    g_timevar = StringVar();
+    timelab = Label(g_fen, textvariable = g_timevar);
     timelab.place(x = 5, y = 570);
 
-    timevar.set("Temps restant : 300 secondes");
+    g_timevar.set("Temps restant : 300 secondes");
 
     # Fonction qui gere le deplacement du joueur a partir des touches pressees et qui s'assure que le joueur ne peux pas avancer dans un mur.
     # Elle envoie ensuite les futures coordonees du joueur a "joueurBrouilard" pous qu'il soit affiche.
     def bouger(event):
-        global lastplayer;
+        global g_lastPlayer;
 
-        py = player.pos.y;
-        px = player.pos.x;
+        py = g_player.pos.y;
+        px = g_player.pos.x;
         Key = repr(event.char);
 
         if Key == "'z'":
-            if labyrinthe[int(py) - 1][int(px)] != '#':
+            if g_labyrinthe[int(py) - 1][int(px)] != '#':
                 py = py - 1;
         elif Key == "'s'":
-            if labyrinthe[int(py) + 1][int(px)] != '#':
+            if g_labyrinthe[int(py) + 1][int(px)] != '#':
                 py = py + 1;
         elif Key == "'d'":
-            if labyrinthe[int(py)][int(px) + 1] != '#':
+            if g_labyrinthe[int(py)][int(px) + 1] != '#':
                 px = px + 1;
         elif Key == "'q'":
-            if labyrinthe[int(py)][int(px) - 1] != '#':
+            if g_labyrinthe[int(py)][int(px) - 1] != '#':
                 px = px - 1;
 
-        if (player.freeze == False) and ((player.pos.x != px) or (player.pos.y != py)): #On verifie que le joueur peut bouger et que sa position à bien changée
-            if labyrinthe[int(py)][int(px)] == "T": #Handle trap catch
+        if (g_player.freeze == False) and ((g_player.pos.x != px) or (g_player.pos.y != py)): #On verifie que le joueur peut bouger et que sa position à bien changée
+            if g_labyrinthe[int(py)][int(px)] == "T": #Handle trap catch
                 print("Player on trap");
-                player.FreezePos(True);
-                player.setlife(player.life - 2);
-                player.updateinfo();
-                player.finishround();
-            elif labyrinthe[int(py)][int(px)] == "H": #Handle heal
+                g_player.FreezePos(True);
+                g_player.setlife(g_player.life - 2);
+                g_player.updateinfo();
+                g_player.finishround();
+            elif g_labyrinthe[int(py)][int(px)] == "H": #Handle heal
                 print("Player on heal");
-                player.setlife(player.life + 2);
-                player.updateinfo();
-                labyrinthe[int(py)][int(px)] = ".";
-                canvas[int(px)][int(py)].create_image(20, 20, image = route);
+                g_player.setlife(g_player.life + 2);
+                g_player.updateinfo();
+                g_labyrinthe[int(py)][int(px)] = ".";
+                g_canvas[int(px)][int(py)].create_image(20, 20, image = g_route);
 
-            player.move(px, py); #On déplace le joueur
-            lastplayer = [px, py]; #On sauvegarde la dernière position
+            g_player.move(px, py); #On déplace le joueur
+            g_lastPlayer = [px, py]; #On sauvegarde la dernière position
             joueurBrouillard(px, py, False);
             ThreadedSound("./sounds/walk.mp3"); #On émet un son dès lors que le joueur bouge
 
-    fen.bind("<Key>", bouger);
-    joueurBrouillard(player.pos.x, player.pos.y, False);
+    g_fen.bind("<Key>", bouger);
+    joueurBrouillard(g_player.pos.x, g_player.pos.y, False);
     start_new_thread(actionsgest, ()); #On execute la gestion des actions réstante de manière séparée pour ne pas bloquer le reste du programme
 
 Client.RegisterClientEvent("firstdata");
 Client.AddEventHandler("firstdata", data);
 
 def ConnectedUpdate(args): #Fonction permettant simplement d'informer le joueur qu'un autre s'est connecté
-    global player;
-    player.AddConnected();
+    global g_player;
+    g_player.AddConnected();
 
 Client.RegisterClientEvent("oplayer:connected");
 Client.AddEventHandler("oplayer:connected", ConnectedUpdate);
 
 def oplayerpos(args): #Fonction gérant l'actualisation de la position de l'autre joueur
-    global canvas;
-    global lastoplayer;
+    global g_canvas;
+    global g_lastOPlayer;
 
     opos = args[0];
-    lastoplayer = [opos[0], opos[1]];
+    g_lastOPlayer = [opos[0], opos[1]];
     joueurBrouillard(opos[0], opos[1], True);
 
 Client.RegisterClientEvent("oplayer:newpos");
 Client.AddEventHandler("oplayer:newpos", oplayerpos);
 
 def revealmap(args):
-    global labyrinthe;
-    global canvas;
-    global cow;
+    global g_labyrinthe;
+    global g_canvas;
+    global g_cow;
 
     for Y in range(15):
         for X in range(15):
-            if labyrinthe[Y][X] == '#':
-                canvas[Y][X].create_image(20, 20, image = mur);
+            if g_labyrinthe[Y][X] == '#':
+                g_canvas[Y][X].create_image(20, 20, image = g_mur);
 
-            elif labyrinthe[Y][X] == ".":
-                canvas[Y][X].create_image(20, 20, image = route);
+            elif g_labyrinthe[Y][X] == ".":
+                g_canvas[Y][X].create_image(20, 20, image = g_route);
 
-            elif labyrinthe[Y][X] == "T":
-                canvas[Y][X].create_image(20, 20, image = piege);
+            elif g_labyrinthe[Y][X] == "T":
+                g_canvas[Y][X].create_image(20, 20, image = g_piege);
 
-            elif labyrinthe[Y][X] == "H":
-                canvas[Y][X].create_image(20, 20, image = soin);
+            elif g_labyrinthe[Y][X] == "H":
+                g_canvas[Y][X].create_image(20, 20, image = g_soin);
 
-    canvas[cow.pos.y][cow.pos.x].create_image(20, 20, image = cowi);
+    g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = cowi);
 
 def revmapthr(args): #Fonction permettant de releveler la totalité du labyrinthe à la fin de la partie
     start_new_thread(revealmap, (args, ));
@@ -304,46 +304,46 @@ Client.RegisterClientEvent("players:reveal");
 Client.AddEventHandler("players:reveal", revmapthr);
 
 def initd(): #Fonction initiale du programme
-    global laby;
-    global cow;
-    global player;
+    global g_laby;
+    global g_cow;
+    global g_player;
     global Client;
-    global canvas;
+    global g_canvas;
 
     # Creation d'un tableau de canvas vides pour y assigner plus facilement les images a l'aide des coordonees de celles ci.
-    canvas = [[None for i in range(15)] for i in range(15)]
+    g_canvas = [[None for i in range(15)] for i in range(15)]
 
-    player = Player(fen); #On crée le joueur
+    g_player = Player(g_fen); #On crée le joueur
 
     # On positionne tout les canvas sur la fenetre
     for Y in range(15):
         for X in range(15):
-            canvas[Y][X] = Canvas(fen);
-            canvas[Y][X].place(x = (40 * X), y = (40 * Y), width = 40, height = 40, anchor = NW);
+            g_canvas[Y][X] = Canvas(g_fen);
+            g_canvas[Y][X].place(x = (40 * X), y = (40 * Y), width = 40, height = 40, anchor = NW);
 
     # On rempli tous les canvas d'une image noir pour cacher le labyrinthe.
     def Brouillard():
         for Y in range(15):
             for X in range(15):
-                canvas[Y][X].create_image(20, 20, image = noir);
+                g_canvas[Y][X].create_image(20, 20, image = g_noir);
 
     # fonction pour initialiser la classe "player" creer "posX" et "posY" qui seront les coordonees de ce dernier.
     # On place le joueur et on decouvre le labyrinthe grace a "joueurBrouillard".
     def initialisation():
         Brouillard();
 
-        canvas[player.pos.y][player.pos.x].create_image(20, 20, image = joueur);
-        fen.focus_set();
+        g_canvas[g_player.pos.y][g_player.pos.x].create_image(20, 20, image = g_joueur);
+        g_fen.focus_set();
 
     initialisation();
-    fen.mainloop(); #Boucle de Tkinter
+    g_fen.mainloop(); #Boucle de Tkinter
 
 def stringToTbl(): #Fonction transformant la chaine de caractères du labyrinthe reçue en tableau 2D
     tbl = [["a" for i in range(15)] for i in range(15)];
     n = 0;
     for y in range(15):
         for x in range(15):
-            tbl[y][x] = laby[n];
+            tbl[y][x] = g_laby[n];
             n += 1;
     return tbl
 

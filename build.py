@@ -3,7 +3,7 @@ import shutil;
 import subprocess;
 import os
 from platform import system;
-system = system();
+g_system = system();
 
 from pkgutil import iter_modules
 
@@ -16,7 +16,7 @@ if (module_exists("pip") == False):
 
 if module_exists("pyinstaller") == False:
     print("Installing missing package :", "pyinstaller");
-    if system == 'Windows':
+    if g_system == 'Windows':
         subprocess.call(r"py -m pip install pyinstaller");
     else:
         subprocess.call(r"sudo python -m pip install pyinstaller", shell = True);
@@ -40,7 +40,7 @@ os.chdir("./src_srv");
 
 print("Building server");
 
-if system == 'Windows':
+if g_system == 'Windows':
     subprocess.call(r"pyinstaller server.py --distpath ../build --workpath ../build/temp --specpath ../build/temp");
 else:
     subprocess.call(r"pyinstaller server.py --distpath ../build --workpath ../build/temp --specpath ../build/temp", shell = True);
@@ -53,7 +53,7 @@ os.chdir("../src");
 
 print("Building client");
 
-if system == 'Windows':
+if g_system == 'Windows':
     subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp --icon=./images/favicon.ico");
 else:
     subprocess.call(r"pyinstaller client.py --distpath ../build --workpath ../build/temp --specpath ../build/temp", shell = True);
@@ -74,7 +74,7 @@ except shutil.Error as e:
 except OSError as e:
     print(e)
 
-if system == 'Windows':
+if g_system == 'Windows':
     print("[ASSETS] Copying libs");
 
     try:
@@ -116,7 +116,7 @@ print("Deleting temp files");
 shutil.rmtree("./temp");
 
 print("Creating server launcher");
-if system == 'Windows':
+if g_system == 'Windows':
     srvlaunch = open("./server/run.cmd", 'w')
     srvlaunch.write("server.exe");
     srvlaunch.close();
