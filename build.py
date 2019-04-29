@@ -92,8 +92,16 @@ if system == 'Windows':
         print(e)
 
     try:
-        print("[ASSETS] Copying sounds");
+        print("[ASSETS] Copying libs");
         shutil.copytree("./lib/ctypes", "../build/client/ctypes");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+else:
+    try:
+        print("[ASSETS] Copying libs");
+        shutil.copytree("./lib/gi", "../build/client/gi");
     except shutil.Error as e:
         print(e)
     except OSError as e:
