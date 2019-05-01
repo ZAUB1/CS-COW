@@ -17,7 +17,7 @@ def MaptoString(array):
             str += array[i][j]
     return str
 
-# Si A et B ont sont sur une branche de l'arbre differente, alors ont unis ces branches
+# Si A et B ont sont sur une branche differente de l'arbre, alors ont unis ces branches
 def union(a, b):
     aID = find(a)
     bID = find(b)
@@ -27,7 +27,7 @@ def union(a, b):
 
 # Fonction qui verifie si le noeud est contenue dans lui meme (cet a dire qu'il est a la racine de
 # d'une branche. Si ce n'est pas le cas la fonction se rappel recursivement avec pour parametre le
-# noeud parent du noeud pour lequel elle a ete appele initialement
+# noeud parent du noeud pour lequel elle a ete appelee initialement
 def find(a):
     if nodeID[a] == a:
         return a
@@ -52,10 +52,10 @@ class Arc:
         self.nodeA  = nodeA
         self.nodeB  = nodeB
 
-# Fonction principal de la generation du labyrinthe, est appele a chaques nouvelle partie
+# Fonction principale de la generation du labyrinthe, est appele a chaques nouvelle partie
 def genLaby():
     global labyrinth, nodeID, nodes
-    # Place les noeuds dans le labyrinthe tous a une case les uns des autres
+    # Place les noeuds dans le labyrinthe tous a 1 case les uns des autres
     for i in range(15):
         for j in range(15):
             if i % 2 == 1 and j % 2 == 1:
@@ -67,7 +67,7 @@ def genLaby():
     for i in range(nodes):
         nodeID[i] = i
 
-    # Genere tout les arcs possible en verifiant depuis chaques noeuds si il y'a un autre noeud
+    # Genere tout les arcs possibles en verifiant depuis chaques noeuds si il y'a un autre noeud
     # accessible depuis celui-ci. Si oui on cree un arc et on le stock dans un tableau
     arcs = []
     for i in range(15):
@@ -84,8 +84,8 @@ def genLaby():
     # Fonction python pour melanger le tableau contenant les arcs
     random.shuffle(arcs)
 
-    # Boucle principale de l'union-find. Pour chaques arcs si ces arcs relient des noeuds qui ne sont
-    # pas dans une meme branche, alors on fusionne ces deux branche en appelant la fonction union()
+    # Boucle principale de l'union-find. Pour chaques arcs, si ces arcs relient des noeuds qui ne sont
+    # pas dans une meme branche, alors on fusionne ces deux branches en appelant la fonction union()
     # On place un '.' dans le labyrinthe puisque deux noeuds sont relies
     for arc in arcs:
         if find(arc.nodeA) != find(arc.nodeB):
@@ -98,7 +98,7 @@ def genLaby():
             if labyrinth[i][j] != '#' and labyrinth[i][j] != '.':
                 labyrinth[i][j] = '.'
 
-    # Pour chaques case du labyrinthe, une probabilite de 1/20 de creer un piege (T) et un soin (H)
+    # Pour chaques case du labyrinthe, une probabilitee de 1/20 de creer un piege (T) et un soin (H)
     for i in range(15):
         for j in range(15):
             if labyrinth[i][j] == '.':
@@ -108,7 +108,7 @@ def genLaby():
                 elif r == 5:
                     labyrinth[i][j] = 'T'
 
-    # Le poit d'apparition du joueurs doit pas avoir de piege
+    # Le poit d'apparition du joueur doit pas avoir de piege
     labyrinth[1][1] = '.'
 
     return labyrinth
