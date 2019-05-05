@@ -33,7 +33,14 @@ CLIENT_MODULES = [
     "player",
     "sound",
     "vector",
-    "helptext"
+    "helptext",
+    "discord"
+]
+
+CLIENT_LIBS = [
+    "pypresence",
+    "asyncio",
+    "concurrent"
 ]
 
 os.chdir("./src_srv");
@@ -106,6 +113,26 @@ else:
         print(e)
     except OSError as e:
         print(e)
+
+for i in CLIENT_LIBS:
+    try:
+        print("[ASSETS] Copying libs", i);
+        shutil.copytree("./lib/" + i, "../build/client/" + i);
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+
+print("Compiling contextvars");
+py_compile.compile("./lib/contextvars.py", "../build/client/contextvars.pyc");
+
+try:
+    print("[ASSETS] Copying libs", "_contextvars.cpython-37m-x86_64-linux-gnu.so");
+    shutil.copyfile("./lib/_contextvars.cpython-37m-x86_64-linux-gnu.so", "../build/client/_contextvars.cpython-37m-x86_64-linux-gnu.so");
+except shutil.Error as e:
+    print(e)
+except OSError as e:
+    print(e)
 
 for i in CLIENT_MODULES:
     print("[CLIENT MODULES] Compiling " + i + ".py");

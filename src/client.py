@@ -4,6 +4,7 @@ import os
 
 from cow import *
 from player import *
+from discord import DPresence
 from tkinter import *
 from _thread import start_new_thread
 from random import randint
@@ -27,6 +28,8 @@ g_noir = PhotoImage(file = 'images/warfog.png');
 g_joueur = PhotoImage(file = 'images/player.png');
 g_joueur2 = PhotoImage(file = "images/player2.png");
 g_cowi = PhotoImage(file = "images/cow.png");
+
+DPresence();
 
 #g_fen.iconbitmap("favicon.ico");
 
