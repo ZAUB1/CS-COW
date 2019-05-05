@@ -126,13 +126,30 @@ for i in CLIENT_LIBS:
 print("Compiling contextvars");
 py_compile.compile("./lib/contextvars.py", "../build/client/contextvars.pyc");
 
-try:
-    print("[ASSETS] Copying libs", "_contextvars.cpython-37m-x86_64-linux-gnu.so");
-    shutil.copyfile("./lib/_contextvars.cpython-37m-x86_64-linux-gnu.so", "../build/client/_contextvars.cpython-37m-x86_64-linux-gnu.so");
-except shutil.Error as e:
-    print(e)
-except OSError as e:
-    print(e)
+if g_system == "Windows":
+    try:
+        print("[ASSETS] Copying libs", "_overlapped.pyd");
+        shutil.copyfile("./lib/_overlapped.pyd", "../build/client/_overlapped.pyd");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+
+    try:
+        print("[ASSETS] Copying libs", "_contextvars.pyd");
+        shutil.copyfile("./lib/_contextvars.pyd", "../build/client/_contextvars.pyd");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
+else:
+    try:
+        print("[ASSETS] Copying libs", "_contextvars.cpython-37m-x86_64-linux-gnu.so");
+        shutil.copyfile("./lib/_contextvars.cpython-37m-x86_64-linux-gnu.so", "../build/client/_contextvars.cpython-37m-x86_64-linux-gnu.so");
+    except shutil.Error as e:
+        print(e)
+    except OSError as e:
+        print(e)
 
 for i in CLIENT_MODULES:
     print("[CLIENT MODULES] Compiling " + i + ".py");
