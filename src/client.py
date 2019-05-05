@@ -212,7 +212,7 @@ def joueurBrouillard(px, py, oplayer):
 
         if (g_cow.pos.x == cx) and (g_cow.pos.y == cy):
             g_player.win();
-            g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = cowi);
+            g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = g_cowi);
 
     if oplayer == True:
         g_canvas[g_lastPlayer[1]][g_lastPlayer[0]].create_image(20, 20, image = g_joueur2);
@@ -333,7 +333,7 @@ def revealmap(args):
             elif g_labyrinthe[Y][X] == "H":
                 g_canvas[Y][X].create_image(20, 20, image = g_soin);
 
-    g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = cowi);
+    g_canvas[g_cow.pos.y][g_cow.pos.x].create_image(20, 20, image = g_cowi);
 
 def revmapthr(args): #Fonction permettant de releveler la totalité du labyrinthe à la fin de la partie
     start_new_thread(revealmap, (args, ));
